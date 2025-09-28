@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from execution_mode import ExecutionMode
 from src.app.core.db import BaseModel
 from src.app.main.common.db import AsyncDatabaseManagerST
+from src.app.main.di import ApplicationContainer
 from src.app.main.exception_handlers import __handlers__
 from src.app.main.routing import project_router
 from src.base.loggers import LoggerBuilder
@@ -70,3 +71,8 @@ async def setup_database_models(db_manager: 'AsyncDatabaseManagerST') -> None:
         #     await conn.run_sync(BaseModel.metadata.drop_all)
 
         await conn.run_sync(BaseModel.metadata.create_all)
+
+
+async def setup_di(app: FastAPI) -> None:
+    container = ApplicationContainer()
+    app.container = container

@@ -1,5 +1,6 @@
 from settings_setup import setup_settings
 
+# Must be first
 settings = setup_settings()
 
 import asyncio
@@ -9,6 +10,7 @@ import uvicorn
 
 from setup import (
     setup_loggers,
+    setup_di,
     setup_database,
     setup_routes,
     setup_error_handlers
@@ -25,20 +27,23 @@ async def _setup(app: fastapi.FastAPI) -> None:
     _logger.info(f"Initializing database")
     await setup_database()
 
+    _logger.info(f"Initializing DI")
+    await setup_di(app)
+
     _logger.info(f"Initializing routes")
     await setup_routes(app)
 
     _logger.info(f"Initializing error handlers")
     await setup_error_handlers(app)
 
-    _logger.info("Successfully initialized FastAPI application")
+    _logger.info("Successfully initialized FastAPI application. Starting uvicorn")
     await _run_uvicorn()
 
 
 # Logger initialization
 _logger = setup_loggers()
 _logger.info(f"Successful logger and settings setup")
-_logger.info(f"Starting application with state: {settings.STATE}")
+_logger.info(f"Starting application with execution mode: {settings.EXECUTION_MODE}")
 
 # Run
 application = fastapi.FastAPI()

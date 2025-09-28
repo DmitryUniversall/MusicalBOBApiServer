@@ -4,4 +4,4 @@ from .exceptions import DBError, DBDoesNotExistError
 from .manager import AbstractAsyncDatabaseManager
 from .schema import BaseSchema
 from .model import BaseModel
-from .repositories import *
+from .adapters import *
