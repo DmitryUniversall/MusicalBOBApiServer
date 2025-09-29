@@ -36,7 +36,7 @@ class CustomModelMeta(DeclarativeMeta):
         return model_cls
 
 
-class BaseModel[_schemaT: BaseSchema](Base, metaclass=CustomModelMeta):  # type: ignore
+class BaseModel(Base, metaclass=CustomModelMeta):  # type: ignore
     """
     A base model class for SQLAlchemy models with additional utilities.
 
@@ -58,7 +58,7 @@ class BaseModel[_schemaT: BaseSchema](Base, metaclass=CustomModelMeta):  # type:
         """
 
     @classmethod
-    def as_pydantic_scheme(
+    def as_pydantic_scheme[_schemaT: BaseSchema](
             cls,
             exclude: tuple[str] | None = None,
             bases: tuple[type[_schemaT], ...] | None = None,
@@ -89,7 +89,7 @@ class BaseModel[_schemaT: BaseSchema](Base, metaclass=CustomModelMeta):  # type:
             **model_kwargs
         )
 
-    def to_schema(self, scheme_cls: type[_schemaT]) -> _schemaT:
+    def to_schema[_schemaT: BaseSchema](self, scheme_cls: type[_schemaT]) -> _schemaT:
         """
         Converts the model instance into a Pydantic schema.
 

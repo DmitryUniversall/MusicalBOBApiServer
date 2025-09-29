@@ -1,3 +1,3 @@
 from .entities import *
-from .repository import *
+from .repositories import *
 from .service import *

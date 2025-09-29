@@ -1,0 +1,25 @@
+from src.app.main.components.users.data.internal.adapters import UserModelAdapter
+from src.app.main.components.users.data.internal.models import UserModel
+from src.app.main.components.users.domain import UsersRepository, UserInternal
+
+
+class UsersRepositoryImpl(UsersRepository):
+    def __init__(self, user_model_adapter: UserModelAdapter) -> None:
+        self._user_model_adapter = user_model_adapter
+
+    async def create_user(self, username: str, password_hashed: str, **fields) -> UserInternal:
+        user_model = UserModel(username=username, password=password_hashed, **fields)
+        await self._user_model_adapter.create(user_model)
+        return user_model.to_schema(UserInternal)
+
+    async def get_user_by_id(self, user_id: int) -> UserInternal:
+        user_model = await self._user_model_adapter.get_by_pk_strict(user_id)
+        return user_model.to_schema(UserInternal)
+
+    async def get_user_by_username(self, username: str, **fields) -> UserInternal:
+        user_model = await self._user_model_adapter.get_one_by_strict(username=username, **fields)
+        return user_model.to_schema(UserInternal)
+
+    async def get_user_by_auth_credentials(self, username: str, password_hashed: str, **fields) -> UserInternal:
+        user_model = await self._user_model_adapter.get_one_by_strict(username=username, password=password_hashed, **fields)
+        return user_model.to_schema(UserInternal)

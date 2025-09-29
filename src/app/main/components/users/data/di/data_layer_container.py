@@ -1,11 +1,11 @@
 from dependency_injector import containers, providers
 
 from ..internal.adapters import UserModelAdapter
-from ..internal.repository import UsersRepositoryImpl
+from ..internal.repositories import UsersRepositoryImpl
 
 
 # This container should NOT be imported or used directly. You must use it only through UsersComponentContainer
-class DataLayerContainer(containers.DeclarativeContainer):
+class UsersDataLayerContainer(containers.DeclarativeContainer):
     # Internal
     _user_model_adapter = providers.Singleton(UserModelAdapter)
 

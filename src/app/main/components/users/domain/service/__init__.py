@@ -1,1 +1,1 @@
-from .user_service import UsersService
+from .user_service import AbstractUsersService
