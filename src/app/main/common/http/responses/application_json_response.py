@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from src.app.main.models_global import ApplicationResponsePayload
+from src.app.main.common.models import ApplicationResponsePayload
 
 
 class ApplicationJsonResponse[_contentT: Any](JSONResponse):

@@ -1,5 +1,5 @@
-from src.app.bases.http.routing import AbstractStaticResponseTypeApiRoute
-from src.app.main.http.responses import ApplicationJsonResponse
+from src.app.core.http.routing import AbstractStaticResponseTypeApiRoute
+from src.app.main.common.http.responses import ApplicationJsonResponse
 
 
 class ApplicationResponseApiRoute(AbstractStaticResponseTypeApiRoute[ApplicationJsonResponse]):

@@ -1,6 +1,6 @@
 import argparse
 
-from execution_mode import RunMode
+from execution_mode import ExecutionMode
 
 # Parser instance
 _parser = argparse.ArgumentParser(description='Fastapi application')
@@ -8,10 +8,10 @@ _parser = argparse.ArgumentParser(description='Fastapi application')
 # Add arguments
 _parser.add_argument(
     '--state',
-    type=RunMode,
-    choices=list(RunMode),
-    help='Specify the run mode (choose from {})'.format('/'.join([e.value for e in RunMode])),
-    default=RunMode.DEBUG
+    type=ExecutionMode,
+    choices=list(ExecutionMode),
+    help='Specify the execution mode (choose from {})'.format('/'.join([mode.value for mode in ExecutionMode])),
+    default=ExecutionMode.DEBUG
 )
 
 # Parse

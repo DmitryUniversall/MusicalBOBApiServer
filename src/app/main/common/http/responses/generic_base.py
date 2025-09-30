@@ -4,9 +4,9 @@ from typing import Any
 
 from starlette.background import BackgroundTask
 
-from src.app.main.http.responses.application_json_response import ApplicationJsonResponse
-from src.app.main.models_global import ApplicationResponsePayload
-from src.core.state import project_settings
+from src.app.main.common.http.responses import ApplicationJsonResponse
+from src.app.main.common.models import ApplicationResponsePayload
+from src.base.state import project_settings
 
 
 class BaseGenericApplicationJsonResponse[_contentT: Any](ApplicationJsonResponse[_contentT], ABC):

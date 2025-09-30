@@ -1,4 +1,4 @@
-from src.core.lazy_objects.lazy_object import LazyObject
+from src.base.lazy_objects.lazy_object import LazyObject
 
 
 class LazyInstance[_T](LazyObject[_T]):

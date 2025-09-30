@@ -1,8 +1,8 @@
 import logging
 from abc import ABC
 
-from src.core.utils.import_tools import import_object
-from src.core.utils.types import MISSING
+from src.base.utils.import_tools import import_object
+from src.base.utils.types import MISSING
 from .abc import AbstractLazyObject
 
 _logger = logging.getLogger()
