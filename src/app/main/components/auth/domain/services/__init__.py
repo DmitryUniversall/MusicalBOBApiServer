@@ -1,1 +1,1 @@
-from .auth_session_service import AbstractAuthSessionService
+from .auth_session_service import AuthSessionService

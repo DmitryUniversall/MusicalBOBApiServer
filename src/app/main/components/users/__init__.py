@@ -1,4 +1,4 @@
-from .di import *
+from . import di  # Bind implementations
+from . import routing  # Register routes in fastapi
 
-# Just to register routes in fastapi
-from .routing import *
+from .domain import *

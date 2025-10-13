@@ -1,12 +1,14 @@
 import hashlib
 
-from src.app.main.components.users.domain import UserInternal, AbstractUsersService
+from src.app.main.common import AlreadyExistsHTTPException
+from src.app.main.components.users.domain import UserInternal, UsersService
 from src.app.main.components.users.domain.repositories.user_repositry import UsersRepository
+from src.base.exceptions import AlreadyExistsError
 
 
-class UsersServiceImpl(AbstractUsersService):
-    def __init__(self, user_repository: UsersRepository) -> None:
-        self._user_repository = user_repository
+class UsersServiceImpl(UsersService):
+    def __init__(self) -> None:
+        self._user_repository = UsersRepository()
 
     def hash_password(self, password_raw: str, encoding: str = "utf-8") -> str:
         return hashlib.sha256(password_raw.encode(encoding=encoding)).hexdigest()

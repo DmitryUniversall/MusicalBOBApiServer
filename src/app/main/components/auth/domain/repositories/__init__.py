@@ -1,1 +1,2 @@
-from .auth_session_repository import AbstractAuthSessionRepository
+from .auth_session_repository import AuthSessionRepository
+from .auth_repostory import AuthRepository

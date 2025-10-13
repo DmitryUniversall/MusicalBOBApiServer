@@ -5,6 +5,7 @@ from .generics import (
     InitializationError,
     ConfigurationError,
     NotFoundError,
+    DoesNotExistError,
     AlreadyExistsError,
     BadVersionError,
     IllegalArgumentError,

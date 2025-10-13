@@ -19,6 +19,18 @@ class ForbiddenHTTPException(GenericApplicationHTTPException):
         })
 
 
+class AlreadyExistsHTTPException(GenericApplicationHTTPException):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs, status_code=HTTPStatus.CONFLICT)
+
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
+        return ApplicationResponsePayload(**{
+            "ok": False,
+            **project_settings.APPLICATION_STATUS_CODES.GENERIC_ERRORS.ALREADY_EXISTS,
+            **payload_kwargs
+        })
+
+
 class NotFoundHTTPException(GenericApplicationHTTPException):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs, status_code=HTTPStatus.NOT_FOUND)

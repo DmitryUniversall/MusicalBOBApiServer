@@ -10,4 +10,4 @@ __handlers__ = [
     http_exception_handler,
     http_validation_exception_handler,
     does_not_exist_exception_handler
-]
+]  # TODO: Add "already exists" exception handler

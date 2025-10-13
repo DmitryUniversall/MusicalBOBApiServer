@@ -1,5 +1,63 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+
+from src.app.main.components.auth.domain import AuthSessionInternal
+from src.base.utils.interface import InterfaceMeta
+from src.base.utils.types import UUIDString
 
 
-class AbstractAuthSessionRepository(ABC):
-    pass
+class AuthSessionRepository(ABC, metaclass=InterfaceMeta):
+    @abstractmethod
+    async def create_session(
+            self,
+            user_id: int,
+            ip_address: str,
+            user_agent: str,
+            session_name: str,
+            access_token_uuid: UUIDString,
+            refresh_token_uuid: UUIDString
+    ) -> AuthSessionInternal:
+        """Create a new session with generated session ID"""
+
+    @abstractmethod
+    async def get_session(self, user_id: int, session_uuid: UUIDString) -> AuthSessionInternal | None:
+        """Get specific session details"""
+
+    @abstractmethod
+    async def get_user_sessions(self, user_id: int) -> tuple[AuthSessionInternal, ...]:
+        """Get all active sessions for user"""
+
+    @abstractmethod
+    async def revoke_session_by_id(self, user_id: int, session_uuid: UUIDString) -> bool:
+        """Revoke specific session"""
+
+    @abstractmethod
+    async def revoke_other_sessions(self, user_id: int, keep_session_uuid: UUIDString) -> None:
+        """Revoke all sessions except specified one"""
+
+    @abstractmethod
+    async def update_session(self, updated_schema: AuthSessionInternal) -> None:
+        """Update session metadata"""
+
+    @abstractmethod
+    async def session_heartbeat(self, session: AuthSessionInternal) -> None:
+        """Update last_used timestamp"""
+
+    @abstractmethod
+    async def session_heartbeat_by_id(self, user_id: int, session_uuid: UUIDString) -> AuthSessionInternal | None:
+        """Update last_used timestamp by id"""
+
+    @abstractmethod
+    async def cleanup(self) -> None:
+        """Cleanup expired sessions"""
+
+    @abstractmethod
+    async def get_session_from_access_token(self, access_token: str) -> AuthSessionInternal:
+        """Get session using access token payload"""
+
+    @abstractmethod
+    async def get_session_from_refresh_token(self, refresh_token: str) -> AuthSessionInternal:
+        """Get session using refresh token payload"""
+
+    @abstractmethod
+    def generate_session_uuid(self) -> str:
+        ...

@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
 from src.app.main.components.users.domain import UserInternal
+from src.base.utils.interface import InterfaceMeta
 
 
-class AbstractUsersService(ABC):
+class UsersService(ABC, metaclass=InterfaceMeta):
     @abstractmethod
     def hash_password(self, password_raw: str, encoding: str = "utf-8") -> str:
         ...

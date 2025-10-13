@@ -21,6 +21,10 @@ class NotFoundError(BaseApplicationError):
     pass
 
 
+class DoesNotExistError(BaseApplicationError):
+    pass
+
+
 class AlreadyExistsError(BaseApplicationError):
     pass
 
