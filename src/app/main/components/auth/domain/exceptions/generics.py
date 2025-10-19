@@ -1,5 +1,5 @@
-from src.app.main.models_global import ApplicationResponsePayload
-from src.core.state import project_settings
+from src.app.main.common import ApplicationResponsePayload
+from src.base.state import project_settings
 from .base import AuthHTTPException
 
 

@@ -1,13 +1,15 @@
 from http import HTTPStatus
 
-from src.app.main.components.auth.domain import AuthSessionService, AuthSessionInternal, AuthSessionRepository
-from src.app.main.components.auth.exceptions import InvalidSessionHTTPException, InactiveSessionHTTPException
 from src.base.utils.types import UUIDString
+from ..domain.entities import AuthSessionInternal
+from ..domain.exceptions import InvalidSessionHTTPException, InactiveSessionHTTPException
+from ..domain.repositories import AuthSessionRepository
+from ..domain.services import AuthSessionService
 
 
 class AuthSessionServiceImpl(AuthSessionService):
-    def __init__(self, session_repository: AuthSessionRepository) -> None:
-        self._session_repository = session_repository
+    def __init__(self) -> None:
+        self._session_repository = AuthSessionRepository.get_implementation()
 
     def generate_session_uuid(self) -> str:
         return self._session_repository.generate_session_uuid()

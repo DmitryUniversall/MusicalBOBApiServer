@@ -2,7 +2,7 @@ from src.base.state import project_settings, ProjectSettings, PyModuleConfig, Js
 
 
 def setup_settings() -> ProjectSettings:
-    project_settings.register_config(PyModuleConfig('src.config'))  # Must be first
+    project_settings.register_config(PyModuleConfig('src.app.config'))  # Must be first
     project_settings.register_config(JsonFileConfig(project_settings.SECRET_CONFIG_PATH))
     project_settings.register_config(JsonFileConfig(project_settings.STATUS_CODES_CONFIG_PATH))
 

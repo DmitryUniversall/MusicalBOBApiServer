@@ -3,8 +3,9 @@ from http import HTTPStatus
 from uuid import uuid4
 
 from src.app.main.common.redis import RedisClientMixin
-from src.app.main.components.auth.domain import AuthSessionRepository, AuthSessionInternal, decode_refresh_token_with_http_exceptions, decode_access_token_with_http_exceptions
+from src.app.main.components.auth.domain import AuthSessionRepository, AuthSessionInternal
 from src.app.main.components.auth.domain.exceptions import InvalidSessionHTTPException, TokenExpiredHTTPException
+from src.app.main.components.auth.internal_utils import decode_refresh_token_with_http_exceptions, decode_access_token_with_http_exceptions
 from src.base.state import project_settings
 from src.base.utils.types import UUIDString
 

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from src.app.main.components.auth.domain import AuthInfo, AuthTokenPair
 from src.base.utils.interface import InterfaceMeta
 from src.base.utils.types import UUIDString
+from ..entities import AuthInfo, AuthTokenPair
 
 
 class AuthService(ABC, metaclass=InterfaceMeta):

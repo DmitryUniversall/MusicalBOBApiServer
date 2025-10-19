@@ -3,12 +3,14 @@ from http import HTTPStatus
 import jwt
 import pydantic
 
-from src.app.main.components.auth.domain import AccessTokenPayload, RefreshTokenPayload, AuthTokenPayload
-from src.app.main.components.auth.domain.exceptions import TokenExpiredHTTPException, TokenInvalidHTTPException, AuthUserUnknownHTTPException
-from src.app.main.components.auth.domain.utils.jwt_tools import decode_jwt_token
-from src.app.main.components.users.data.internal.models import UserModel
-from src.app.main.components.users.domain import UsersService, UserInternal
+from src.app.main.components.users import UsersService, UserInternal
+from src.base.exceptions import DoesNotExistError
 from src.base.utils.types import JsonDict
+from .jwt_tools import decode_jwt_token
+from ..domain.entities import AccessTokenPayload, RefreshTokenPayload, AuthTokenPayload
+from ..domain.exceptions import TokenExpiredHTTPException, TokenInvalidHTTPException, AuthUserUnknownHTTPException
+
+_user_service = UsersService.get_implementation()
 
 
 def decode_jwt_token_with_http_exceptions(token: str) -> JsonDict:
@@ -35,9 +37,7 @@ def decode_refresh_token_with_http_exceptions(token: str) -> RefreshTokenPayload
 
 
 async def get_user_from_token_payload(payload: AuthTokenPayload) -> UserInternal:
-    user_service = UsersService.get_implementation()
-
     try:
-        return await user_service.get_user_by_id(payload.user_id)
-    except UserModel.DoesNotExist as error:
+        return await _user_service.get_user_by_id(payload.user_id)
+    except DoesNotExistError as error:
         raise AuthUserUnknownHTTPException(status_code=HTTPStatus.UNAUTHORIZED) from error

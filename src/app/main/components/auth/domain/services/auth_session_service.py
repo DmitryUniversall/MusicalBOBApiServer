@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from src.app.main.components.auth.domain import AuthSessionInternal
 from src.base.utils.interface import InterfaceMeta
 from src.base.utils.types import UUIDString
+from ..entities import AuthSessionInternal
 
 
 class AuthSessionService(ABC, metaclass=InterfaceMeta):

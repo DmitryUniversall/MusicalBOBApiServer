@@ -10,7 +10,6 @@ import uvicorn
 
 from setup import (
     setup_loggers,
-    setup_di,
     setup_database,
     setup_routes,
     setup_error_handlers
@@ -27,9 +26,6 @@ async def _setup(app: fastapi.FastAPI) -> None:
     _logger.info(f"Initializing database")
     await setup_database()
 
-    _logger.info(f"Initializing DI")
-    await setup_di(app)
-
     _logger.info(f"Initializing routes")
     await setup_routes(app)
 
@@ -43,7 +39,7 @@ async def _setup(app: fastapi.FastAPI) -> None:
 # Logger initialization
 _logger = setup_loggers()
 _logger.info(f"Successful logger and settings setup")
-_logger.info(f"Starting application with execution mode: {settings.EXECUTION_MODE}")
+_logger.info(f"Starting application with execution mode: {settings.MODE}")
 
 # Run
 application = fastapi.FastAPI()

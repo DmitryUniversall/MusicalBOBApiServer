@@ -1,6 +1,6 @@
 from src.app.core import BaseSchema
-from src.app.main.components.auth.domain import AuthSessionInternal
-from src.app.main.components.users.domain import UserInternal
+from .auth_session import AuthSessionInternal
+from src.app.main.components.users import UserInternal
 
 
 class AuthInfo(BaseSchema):

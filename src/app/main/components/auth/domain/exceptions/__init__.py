@@ -8,7 +8,6 @@ from .generics import (
     TokenInvalidHTTPException,
     TokenValidationFailed,
     AuthUserUnknownHTTPException,
-    UserAlreadyExists,
     WrongAuthCredentialsHTTPException,
     InvalidSessionHTTPException,
     SuspiciousActivityHTTPException,

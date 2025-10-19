@@ -7,7 +7,7 @@ _parser = argparse.ArgumentParser(description='Fastapi application')
 
 # Add arguments
 _parser.add_argument(
-    '--state',
+    '--mode',
     type=ExecutionMode,
     choices=list(ExecutionMode),
     help='Specify the execution mode (choose from {})'.format('/'.join([mode.value for mode in ExecutionMode])),

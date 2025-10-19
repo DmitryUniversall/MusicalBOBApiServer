@@ -1,12 +1,13 @@
 from http import HTTPStatus
 
-from src.app.main.components.auth.domain import AuthSessionService, AuthInfo, AuthSessionInternal, AuthTokenPair
-from src.app.main.components.auth.domain.exceptions import SuspiciousActivityHTTPException, WrongAuthCredentialsHTTPException, AuthUserUnknownHTTPException
-from src.app.main.components.auth.domain.services.auth_service import AuthService
-from src.app.main.components.auth.domain.utils.jwt_tools import generate_jwt_token_id, create_access_token, create_refresh_token
-from src.app.main.components.users.domain import UserInternal, UsersService
+from src.app.main.components.users import UserInternal, UsersService
 from src.base.exceptions import DoesNotExistError
 from src.base.utils.types import UUIDString
+from ..domain.entities import AuthInfo, AuthSessionInternal, AuthTokenPair
+from ..domain.exceptions import SuspiciousActivityHTTPException, WrongAuthCredentialsHTTPException, AuthUserUnknownHTTPException
+from ..domain.services import AuthSessionService
+from ..domain.services.auth_service import AuthService
+from ..internal_utils import generate_jwt_token_id, create_access_token, create_refresh_token
 
 
 class AuthServiceImpl(AuthService):

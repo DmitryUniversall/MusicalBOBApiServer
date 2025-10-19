@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from http import HTTPStatus
 from typing import Any
 
-from src.app.main.common import ApplicationResponsePayload
+from src.app.main.common.models.application_response import ApplicationResponsePayload
 from ..http_exception import ApplicationHTTPException
 
 
