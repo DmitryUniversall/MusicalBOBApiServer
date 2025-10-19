@@ -55,6 +55,10 @@
             "OPERATION_CANCELLED": {
                 "application_status_code": 2007,
                 "message": "Operation cancelled"
+            },
+            "ROUTE_DOES_NOT_EXISTS": {
+                "application_status_code": 2008,
+                "message": "Route does not exists"
             }
         },
         "AUTH": {

@@ -78,7 +78,7 @@ class AuthServiceImpl(AuthService):
         return AuthInfo(user=user, session=session)
 
     async def refresh(self, refresh_token: str, current_client_ip: str, current_client_user_agent: str) -> AuthTokenPair:
-        session = await self._session_service.validate_refresh_token(refresh_token)
+        session = await self._session_service.get_session_from_refresh_token(refresh_token)
         user = await self._get_user_by_id(session.user_id)
 
         if not await self.suspicious_activity_check(session, current_client_ip, current_client_user_agent):

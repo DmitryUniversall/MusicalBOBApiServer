@@ -1,3 +1,4 @@
+from src.app.main.common.db.exceptions import UniqueConstraintFailed
 from src.app.main.components.users.data.internal.adapters import UserModelAdapter
 from src.app.main.components.users.data.internal.models import UserModel
 from src.app.main.components.users.domain import UsersRepository, UserInternal
@@ -14,6 +15,8 @@ class UsersRepositoryImpl(UsersRepository):
             await self._user_model_adapter.create(user_model)
             return user_model.to_schema(UserInternal)
         except UserModel.DoesNotExist as error:
+            raise DoesNotExistError(f"User does not exists") from error
+        except UniqueConstraintFailed as error:
             raise AlreadyExistsError(f"User already exists") from error
 
     async def get_user_by_id(self, user_id: int) -> UserInternal:
