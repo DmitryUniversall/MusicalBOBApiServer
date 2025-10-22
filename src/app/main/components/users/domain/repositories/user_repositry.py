@@ -5,7 +5,7 @@ from src.app.main.components.users.domain import UserInternal
 from src.base.utils.interface import InterfaceMeta
 
 
-class UsersRepository(ABC, metaclass=InterfaceMeta):
+class UsersRepositoryI(ABC, metaclass=InterfaceMeta):
     @abstractmethod
     async def create_user(self, username: str, password_hashed: str, **fields) -> UserInternal:
         ...

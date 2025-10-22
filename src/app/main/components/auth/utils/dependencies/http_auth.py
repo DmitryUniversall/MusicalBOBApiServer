@@ -1,10 +1,10 @@
 from starlette.requests import Request
 
 from src.app.main.components.auth.domain.entities.auth_info import AuthInfo
-from src.app.main.components.auth.domain.services.auth_service import AuthService
+from src.app.main.components.auth.domain.services.auth_service import AuthServiceI
 from ..bearer_auth_mixin import BearerAuthMixin
 
-_auth_service = AuthService.get_implementation()
+_auth_service = AuthServiceI.get_implementation()
 
 
 class HTTPJWTBearerAuthDependency(BearerAuthMixin):

@@ -20,6 +20,10 @@ async def gather_all[_T](coros_or_futures: Iterable[CoroOrFuture[_T]]) -> tuple[
     return tuple(await asyncio.gather(*coros_or_futures))
 
 
+async def gather_for_each[_T, _V](coro: Callable[..., CoroOrFuture[_T]], array: Iterable[_V], *args, **kwargs) -> tuple[_T, ...]:
+    return await gather_all((coro(item, *args, **kwargs) for item in array))
+
+
 async def wait_with_timeout[_T](
         coro: CoroOrFuture[_T],
         *,

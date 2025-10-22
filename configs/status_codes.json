@@ -114,6 +114,16 @@
                 "application_status_code": 3013,
                 "message": "Unknown error occurred during auth process, request rejected"
             }
+        },
+        "SEARCH": {
+            "SEARCH_FAILED_NOT_FOUND": {
+                "application_status_code": 4000,
+                "message": "Nothing found for specified query"
+            },
+            "BAD_URL_FORMAT": {
+                "application_status_code": 4001,
+                "message": "Bad url specified"
+            }
         }
     }
 }

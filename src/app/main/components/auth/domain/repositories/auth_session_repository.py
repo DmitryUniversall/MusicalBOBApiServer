@@ -5,7 +5,7 @@ from src.base.utils.types import UUIDString
 from ..entities import AuthSessionInternal
 
 
-class AuthSessionRepository(ABC, metaclass=InterfaceMeta):
+class AuthSessionRepositoryI(ABC, metaclass=InterfaceMeta):
     @abstractmethod
     async def create_session(
             self,

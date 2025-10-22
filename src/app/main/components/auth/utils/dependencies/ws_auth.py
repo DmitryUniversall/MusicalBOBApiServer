@@ -2,12 +2,12 @@ import logging
 
 from starlette.websockets import WebSocket
 
-from src.app.main.components.auth import AuthService, AuthInfo
+from src.app.main.components.auth import AuthServiceI, AuthInfo
 from src.app.main.components.auth.domain.exceptions import AuthHTTPException
 from src.base.state import project_settings
 from ..bearer_auth_mixin import BearerAuthMixin
 
-_auth_service = AuthService.get_implementation()
+_auth_service = AuthServiceI.get_implementation()
 _logger = logging.getLogger(__name__)
 
 

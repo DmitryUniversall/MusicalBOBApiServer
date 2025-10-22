@@ -4,14 +4,14 @@ from uuid import uuid4
 
 from src.app.main.common.redis import RedisClientMixin
 from src.app.main.common.utils.redis import convert_for_redis
-from src.app.main.components.auth.domain import AuthSessionRepository, AuthSessionInternal
+from src.app.main.components.auth.domain import AuthSessionRepositoryI, AuthSessionInternal
 from src.app.main.components.auth.domain.exceptions import InvalidSessionHTTPException, TokenExpiredHTTPException
 from src.app.main.components.auth.internal_utils import decode_refresh_token_with_http_exceptions, decode_access_token_with_http_exceptions
 from src.base.state import project_settings
 from src.base.utils.types import UUIDString
 
 
-class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepository):
+class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
     AUTH_USER_DATA_REDIS_KEY: str = project_settings.AUTH_REDIS_KEY + ":user:{}"
     AUTH_USER_SESSIONS_REDIS_KEY: str = AUTH_USER_DATA_REDIS_KEY + ":sessions"
     AUTH_USER_SESSION_REDIS_KEY: str = AUTH_USER_SESSIONS_REDIS_KEY + ":{}"

@@ -4,7 +4,7 @@ from src.app.main.components.users.domain import UserInternal
 from src.base.utils.interface import InterfaceMeta
 
 
-class UsersService(ABC, metaclass=InterfaceMeta):
+class UsersServiceI(ABC, metaclass=InterfaceMeta):
     @abstractmethod
     def hash_password(self, password_raw: str, encoding: str = "utf-8") -> str:
         ...

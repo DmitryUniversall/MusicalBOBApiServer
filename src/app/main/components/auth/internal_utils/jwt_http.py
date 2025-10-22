@@ -3,14 +3,14 @@ from http import HTTPStatus
 import jwt
 import pydantic
 
-from src.app.main.components.users import UsersService, UserInternal
+from src.app.main.components.users import UsersServiceI, UserInternal
 from src.base.exceptions import DoesNotExistError
 from src.base.utils.types import JsonDict
 from .jwt_tools import decode_jwt_token
 from ..domain.entities import AccessTokenPayload, RefreshTokenPayload, AuthTokenPayload
 from ..domain.exceptions import TokenExpiredHTTPException, TokenInvalidHTTPException, AuthUserUnknownHTTPException
 
-_user_service = UsersService.get_implementation()
+_user_service = UsersServiceI.get_implementation()
 
 
 def decode_jwt_token_with_http_exceptions(token: str) -> JsonDict:

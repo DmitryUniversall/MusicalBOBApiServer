@@ -1,9 +1,9 @@
 from .data import di  # type: ignore
 
-from .domain.services.auth_service import AuthService
-from .domain.services.auth_session_service import AuthSessionService
+from .domain.services.auth_service import AuthServiceI
+from .domain.services.auth_session_service import AuthSessionServiceI
 from .services_impl.auth_service_impl import AuthServiceImpl
 from .services_impl.auth_session_service_impl import AuthSessionServiceImpl
 
-AuthSessionService.bind_implementation(AuthSessionServiceImpl)
-AuthService.bind_implementation(AuthServiceImpl)
+AuthSessionServiceI.bind_implementation(AuthSessionServiceImpl)
+AuthServiceI.bind_implementation(AuthServiceImpl)

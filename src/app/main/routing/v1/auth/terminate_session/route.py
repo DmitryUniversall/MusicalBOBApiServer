@@ -1,11 +1,11 @@
 from fastapi import Depends
 
 from src.app.main.common import ApplicationJsonResponse, SuccessResponse
-from src.app.main.components.auth import AuthService, AuthInfo, HTTPJWTBearerAuthDependency
+from src.app.main.components.auth import AuthServiceI, AuthInfo, HTTPJWTBearerAuthDependency
 from src.base.utils.types import UUIDString
 from ..component_router_v1 import auth_router_v1
 
-_auth_service = AuthService.get_implementation()
+_auth_service = AuthServiceI.get_implementation()
 _jwt_auth = HTTPJWTBearerAuthDependency()
 
 

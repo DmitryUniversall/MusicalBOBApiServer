@@ -1,4 +1,4 @@
 from src.app.main.components.auth.data.internal.repositories import AuthSessionRepositoryRedisImpl
-from src.app.main.components.auth.domain import AuthSessionRepository
+from src.app.main.components.auth.domain import AuthSessionRepositoryI
 
-AuthSessionRepository.bind_implementation(AuthSessionRepositoryRedisImpl)
+AuthSessionRepositoryI.bind_implementation(AuthSessionRepositoryRedisImpl)

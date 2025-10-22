@@ -1,2 +1,2 @@
-from .auth_session_service import AuthSessionService
-from .auth_service import AuthService
+from .auth_session_service import AuthSessionServiceI
+from .auth_service import AuthServiceI

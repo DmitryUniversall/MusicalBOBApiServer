@@ -1,12 +1,12 @@
 import hashlib
 
-from src.app.main.components.users.domain import UserInternal, UsersService
-from src.app.main.components.users.domain.repositories.user_repositry import UsersRepository
+from src.app.main.components.users.domain import UserInternal, UsersServiceI
+from src.app.main.components.users.domain.repositories.user_repositry import UsersRepositoryI
 
 
-class UsersServiceImpl(UsersService):
+class UsersServiceImpl(UsersServiceI):
     def __init__(self) -> None:
-        self._user_repository = UsersRepository.get_implementation()
+        self._user_repository = UsersRepositoryI.get_implementation()
 
     def hash_password(self, password_raw: str, encoding: str = "utf-8") -> str:
         return hashlib.sha256(password_raw.encode(encoding=encoding)).hexdigest()

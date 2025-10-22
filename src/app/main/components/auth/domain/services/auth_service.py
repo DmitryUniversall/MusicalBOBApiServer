@@ -5,7 +5,7 @@ from src.base.utils.types import UUIDString
 from ..entities import AuthInfo, AuthTokenPair
 
 
-class AuthService(ABC, metaclass=InterfaceMeta):
+class AuthServiceI(ABC, metaclass=InterfaceMeta):
     @abstractmethod
     async def authenticate(self, access_token: str) -> AuthInfo:
         ...

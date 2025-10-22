@@ -1,11 +1,11 @@
 from src.app.main.common.db.exceptions import UniqueConstraintFailed
 from src.app.main.components.users.data.internal.adapters import UserModelAdapter
 from src.app.main.components.users.data.internal.models import UserModel
-from src.app.main.components.users.domain import UsersRepository, UserInternal
+from src.app.main.components.users.domain import UsersRepositoryI, UserInternal
 from src.base.exceptions import DoesNotExistError, AlreadyExistsError
 
 
-class UsersRepositoryImpl(UsersRepository):
+class UsersRepositoryImpl(UsersRepositoryI):
     def __init__(self) -> None:
         self._user_model_adapter = UserModelAdapter()
 
