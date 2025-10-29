@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi.responses import JSONResponse
 
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 
 
 class ApplicationJsonResponse[_contentT: Any](JSONResponse):
@@ -10,7 +10,7 @@ class ApplicationJsonResponse[_contentT: Any](JSONResponse):
     A custom FastAPI response class for handling JSON responses with a specific payload structure.
     """
 
-    def __init__(self, *, content: ApplicationResponsePayload[_contentT], **kwargs) -> None:
+    def __init__(self, *, content: ApplicationResponseDTO[_contentT], **kwargs) -> None:
         """
         Initializes the response with the given payload.
 
@@ -24,7 +24,7 @@ class ApplicationJsonResponse[_contentT: Any](JSONResponse):
         self.payload = content
         super().__init__(content, **kwargs)
 
-    def render(self, content: ApplicationResponsePayload[_contentT]) -> bytes:
+    def render(self, content: ApplicationResponseDTO[_contentT]) -> bytes:
         """
         Renders the content into a JSON-encoded byte string.
 

@@ -6,7 +6,7 @@ from src.app.core.db import BaseSchema
 from src.base.utils.types import JsonDict
 
 
-class ApplicationResponsePayload[_contentT: Any](BaseSchema):
+class ApplicationResponseDTO[_contentT: Any](BaseSchema):
     ok: bool = True
     application_status_code: int
     message: str

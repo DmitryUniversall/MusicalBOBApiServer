@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from src.app.core.exceptions import AbstractErrorHandler
 from src.app.main.common.http import ApplicationJsonResponse
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.state import project_settings
 from src.base.utils.types import JsonDict
 
@@ -14,7 +14,7 @@ from src.base.utils.types import JsonDict
 @AbstractErrorHandler.as_error_handler(exception_cls=RequestValidationError)
 async def http_validation_exception_handler(_: Request, exc: RequestValidationError, **__) -> ApplicationJsonResponse:
     return ApplicationJsonResponse(
-        content=ApplicationResponsePayload[JsonDict](
+        content=ApplicationResponseDTO[JsonDict](
             ok=False,
             data={"detail": jsonable_encoder(exc.errors())},
             **project_settings.APPLICATION_STATUS_CODES.GENERIC_ERRORS.UNPROCESSABLE_ENTITY

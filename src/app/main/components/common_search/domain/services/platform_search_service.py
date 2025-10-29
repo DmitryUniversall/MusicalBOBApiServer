@@ -19,7 +19,7 @@ class AbstractPlatformSearchService(ABC):
         ...
 
     @abstractmethod
-    async def get_audio_sources(self, url: str) -> tuple[AudioSource]:
+    async def get_audio_sources(self, url: str) -> tuple[AudioSource, ...]:
         ...
 
     @abstractmethod

@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from http import HTTPStatus
 from typing import Any
 
-from src.app.main.common.models.application_response import ApplicationResponsePayload
+from src.app.main.common.dto.application_response_dto import ApplicationResponseDTO
 from ..http_exception import ApplicationHTTPException
 
 
@@ -14,7 +14,7 @@ class GenericApplicationHTTPException[_contentT: Any](ApplicationHTTPException[_
     def __init__(
             self,
             *,
-            payload: ApplicationResponsePayload[_contentT] | None = None,  # FIXME: Typing
+            payload: ApplicationResponseDTO[_contentT] | None = None,  # FIXME: Typing
             status_code: int = HTTPStatus.INTERNAL_SERVER_ERROR,
             headers: dict[str, str] | None = None,
             **payload_kwargs
@@ -25,7 +25,7 @@ class GenericApplicationHTTPException[_contentT: Any](ApplicationHTTPException[_
         super().__init__(payload=payload, status_code=status_code, headers=headers)
 
     @abstractmethod
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload[_contentT]:
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO[_contentT]:
         """
         Abstract method for generating the default response payload for the exception.
 

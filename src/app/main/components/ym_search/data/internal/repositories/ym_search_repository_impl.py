@@ -2,14 +2,15 @@ from typing import Optional, Iterable
 
 import yandex_music
 
-from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track
+from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource
+from ..ym_client import CustomYandexMusicClientI
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
 from src.base.utils.async_tools import gather_for_each
 
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
     def __init__(self) -> None:
-        self._ym_client: CustomYandexMusicClient = project_settings.YANDEX_MUSIC_CLIENT
+        self._ym_client: CustomYandexMusicClientI = CustomYandexMusicClientI.get_implementation()
 
     async def _ym_artist_to_author(self, artist: yandex_music.Artist, **kwargs) -> 'Author':
         data = {
@@ -95,6 +96,9 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
 
         return Track(**data)
 
+    def wrap_with_audio_source(self, sources: Iterable[str]) -> tuple[AudioSource, ...]:
+        return tuple(AudioSource(source=source) for source in sources)
+
     async def get_album_by_url(self, url: str) -> Playlist:
         album, tracks = await self._ym_client.get_album_with_tracks_by_url(url=url)
         return await self._ym_album_to_playlist(album=album, tracks=tracks, source=url)
@@ -107,5 +111,19 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         track = await self._ym_client.get_track_by_url(url=url)
         return await self._ym_track_to_track(track=track, source=url)
 
-    async def search_track_by_name(self, query: str) -> Track:
-        pass
+    async def search_track_by_name(self, query: str) -> Optional[Track]:
+        tracks = await self._ym_client.search_track_by_name(query)
+
+        if not tracks:
+            return None
+
+        best_match_track = tracks[0]
+        best_match_track.variations = tracks[1:]
+
+        return best_match_track
+
+    async def get_audio_sources(self, url: str) -> tuple[AudioSource, ...]:
+        return self.wrap_with_audio_source(await self._ym_client.get_audio_sources_by_url(url=url))
+
+    async def get_lyrics(self, url: str) -> Optional[str]:
+        return await self._ym_client.get_lyrics_by_url(url=url)

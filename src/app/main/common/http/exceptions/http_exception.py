@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.exceptions import BaseApplicationError
 
 
@@ -13,12 +13,12 @@ class ApplicationHTTPException[_contentT: Any](BaseApplicationError):
     def __init__(
             self,
             *,
-            payload: ApplicationResponsePayload[_contentT],
+            payload: ApplicationResponseDTO[_contentT],
             status_code: int,
             headers: dict[str, str] | None = None
     ) -> None:
         super().__init__(payload.message)
 
-        self.payload: ApplicationResponsePayload = payload
+        self.payload: ApplicationResponseDTO = payload
         self.headers: dict[str, str] | None = headers
         self.status_code = status_code

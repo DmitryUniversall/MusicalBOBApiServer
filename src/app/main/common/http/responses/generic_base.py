@@ -5,7 +5,7 @@ from typing import Any
 from starlette.background import BackgroundTask
 
 from src.app.main.common.http.responses import ApplicationJsonResponse
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.state import project_settings
 
 
@@ -18,7 +18,7 @@ class BaseGenericApplicationJsonResponse[_contentT: Any](ApplicationJsonResponse
             self,
             *,
             status_code: int,
-            payload: ApplicationResponsePayload | None = None,
+            payload: ApplicationResponseDTO | None = None,
             headers: dict[str, str] | None = None,
             background: BackgroundTask | None = None,
             **payload_kwargs
@@ -49,7 +49,7 @@ class BaseGenericApplicationJsonResponse[_contentT: Any](ApplicationJsonResponse
         super().__init__(content=payload, status_code=status_code, headers=headers, background=background)
 
     @abstractmethod
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
         """
         Abstract method for generating the default response payload.
 
@@ -92,7 +92,7 @@ class GenericApplicationJsonResponse[_contentT: Any](BaseGenericApplicationJsonR
         kwargs.setdefault("status_code", getattr(self.__class__, "default_status_code"))
         super().__init__(**kwargs)
 
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
         """
         Generates the default response payload based on class-level default settings.
 
@@ -106,7 +106,7 @@ class GenericApplicationJsonResponse[_contentT: Any](BaseGenericApplicationJsonR
         path = getattr(self.__class__, "default_status_info_path").split(".")
         default_status_info = reduce(getattr, path, project_settings.APPLICATION_STATUS_CODES)
 
-        return ApplicationResponsePayload(**{
+        return ApplicationResponseDTO(**{
             "ok": getattr(self.__class__, "default_ok"),
             **default_status_info,
             **payload_kwargs

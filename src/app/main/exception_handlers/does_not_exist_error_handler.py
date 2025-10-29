@@ -5,7 +5,7 @@ from starlette.requests import Request
 
 from src.app.core.exceptions import AbstractErrorHandler
 from src.app.main.common.http import ApplicationJsonResponse
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.exceptions import DoesNotExistError
 from src.base.state import project_settings
 from src.base.utils.types import JsonDict
@@ -18,7 +18,7 @@ async def does_not_exist_exception_handler(_: Request, error: DoesNotExistError,
     _logger.debug(f"Sending HTTP 404 on error: {error.__class__.__name__}: {error}")
 
     return ApplicationJsonResponse(
-        content=ApplicationResponsePayload[JsonDict](
+        content=ApplicationResponseDTO[JsonDict](
             ok=False,
             data=None,
             **project_settings.APPLICATION_STATUS_CODES.GENERIC_ERRORS.NOT_FOUND,

@@ -7,7 +7,7 @@ from starlette.requests import Request
 
 from src.app.core.exceptions import AbstractErrorHandler
 from src.app.main.common.http import ApplicationJsonResponse
-from src.app.main.common.models import ApplicationResponsePayload
+from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.state import project_settings
 from src.base.utils.types import JsonDict
 

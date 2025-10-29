@@ -1,11 +1,11 @@
-from src.app.main.common import ApplicationResponsePayload
+from src.app.main.common import ApplicationResponseDTO
 from src.base.state import project_settings
 from .base import AuthHTTPException
 
 
 class AuthorizationNotSpecifiedHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.AUTHORIZATION_NOT_SPECIFIED,
             **payload_kwargs
@@ -13,8 +13,8 @@ class AuthorizationNotSpecifiedHTTPException(AuthHTTPException):
 
 
 class AuthorizationInvalidHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.AUTHORIZATION_INVALID,
             **payload_kwargs
@@ -22,8 +22,8 @@ class AuthorizationInvalidHTTPException(AuthHTTPException):
 
 
 class AuthorizationTypeUnknownHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.AUTHORIZATION_TYPE_UNKNOWN,
             **payload_kwargs
@@ -31,8 +31,8 @@ class AuthorizationTypeUnknownHTTPException(AuthHTTPException):
 
 
 class TokenNotSpecifiedHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.TOKEN_NOT_SPECIFIED,
             **payload_kwargs
@@ -40,8 +40,8 @@ class TokenNotSpecifiedHTTPException(AuthHTTPException):
 
 
 class TokenExpiredHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.TOKEN_EXPIRED,
             **payload_kwargs
@@ -49,8 +49,8 @@ class TokenExpiredHTTPException(AuthHTTPException):
 
 
 class TokenInvalidHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.TOKEN_INVALID,
             **payload_kwargs
@@ -58,8 +58,8 @@ class TokenInvalidHTTPException(AuthHTTPException):
 
 
 class TokenValidationFailed(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.TOKEN_VALIDATION_FAILED,
             **payload_kwargs
@@ -67,8 +67,8 @@ class TokenValidationFailed(AuthHTTPException):
 
 
 class AuthUserUnknownHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.UNKNOWN_USER,
             **payload_kwargs
@@ -76,8 +76,8 @@ class AuthUserUnknownHTTPException(AuthHTTPException):
 
 
 class WrongAuthCredentialsHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.WRONG_AUTH_CREDENTIALS,
             **payload_kwargs
@@ -85,8 +85,8 @@ class WrongAuthCredentialsHTTPException(AuthHTTPException):
 
 
 class InvalidSessionHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.INVALID_SESSION,
             **payload_kwargs
@@ -94,8 +94,8 @@ class InvalidSessionHTTPException(AuthHTTPException):
 
 
 class SuspiciousActivityHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.SUSPICIOUS_ACTIVITY,
             **payload_kwargs
@@ -103,8 +103,8 @@ class SuspiciousActivityHTTPException(AuthHTTPException):
 
 
 class InactiveSessionHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.INACTIVE_SESSION,
             **payload_kwargs
@@ -112,8 +112,8 @@ class InactiveSessionHTTPException(AuthHTTPException):
 
 
 class AuthFailedUnknownErrorHTTPException(AuthHTTPException):
-    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponsePayload:
-        return ApplicationResponsePayload(**{
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
             "ok": False,
             **project_settings.APPLICATION_STATUS_CODES.AUTH.AUTH_FAILED_UNKNOWN_ERROR,
             **payload_kwargs

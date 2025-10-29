@@ -123,6 +123,10 @@
             "BAD_URL_FORMAT": {
                 "application_status_code": 4001,
                 "message": "Bad url specified"
+            },
+            "UNAVAILABLE_CONTENT": {
+                "application_status_code": 4002,
+                "message": "Requested content unavailable"
             }
         }
     }

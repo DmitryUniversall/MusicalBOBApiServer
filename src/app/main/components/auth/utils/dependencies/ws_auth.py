@@ -7,7 +7,7 @@ from src.app.main.components.auth.domain.exceptions import AuthHTTPException
 from src.base.state import project_settings
 from ..bearer_auth_mixin import BearerAuthMixin
 
-_auth_service = AuthServiceI.get_implementation()
+_auth_service = AuthServiceI.get_implementation()  # type: ignore
 _logger = logging.getLogger(__name__)
 
 

@@ -10,7 +10,7 @@ from .jwt_tools import decode_jwt_token
 from ..domain.entities import AccessTokenPayload, RefreshTokenPayload, AuthTokenPayload
 from ..domain.exceptions import TokenExpiredHTTPException, TokenInvalidHTTPException, AuthUserUnknownHTTPException
 
-_user_service = UsersServiceI.get_implementation()
+_user_service = UsersServiceI.get_implementation()  # type: ignore
 
 
 def decode_jwt_token_with_http_exceptions(token: str) -> JsonDict:

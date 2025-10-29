@@ -9,7 +9,7 @@ from ..domain.services import AuthSessionServiceI
 
 class AuthSessionServiceImpl(AuthSessionServiceI):
     def __init__(self) -> None:
-        self._session_repository = AuthSessionRepositoryI.get_implementation()
+        self._session_repository = AuthSessionRepositoryI.get_implementation()  # type: ignore
 
     def generate_session_uuid(self) -> str:
         return self._session_repository.generate_session_uuid()

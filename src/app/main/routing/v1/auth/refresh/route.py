@@ -5,7 +5,7 @@ from src.app.main.components.auth import AuthServiceI
 from .dto import RefreshRequestDTO, RefreshResponseDTO
 from ..component_router_v1 import auth_router_v1
 
-_auth_service = AuthServiceI.get_implementation()
+_auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.post("/refresh/")

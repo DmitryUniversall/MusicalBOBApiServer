@@ -5,7 +5,7 @@ from src.app.main.components.auth import AuthServiceI, AuthInfo, HTTPJWTBearerAu
 from src.base.utils.types import UUIDString
 from ..component_router_v1 import auth_router_v1
 
-_auth_service = AuthServiceI.get_implementation()
+_auth_service = AuthServiceI.get_implementation()  # type: ignore
 _jwt_auth = HTTPJWTBearerAuthDependency()
 
 

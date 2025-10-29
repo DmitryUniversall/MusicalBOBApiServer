@@ -5,7 +5,7 @@ from src.app.main.components.auth import AuthServiceI, AuthInfo, HTTPJWTBearerAu
 from ..component_router_v1 import auth_router_v1
 
 _jwt_auth = HTTPJWTBearerAuthDependency()
-_auth_service = AuthServiceI.get_implementation()
+_auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.get("/logout/")
