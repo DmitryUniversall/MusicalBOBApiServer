@@ -10,7 +10,7 @@ _jwt_auth = HTTPJWTBearerAuthDependency()
 
 
 @users_router_v1.get("/me/")
-async def get_me_route(auth_info: AuthInfo = Depends(_jwt_auth)) -> ApplicationJsonResponse:
+async def get_me_route(auth_info: AuthInfo = Depends(_jwt_auth)) -> ApplicationJsonResponse[GetMeResponseDTO]:
     return SuccessResponse[GetMeResponseDTO](
         data=GetMeResponseDTO(
             user=auth_info.user.convert_to(UserPrivate)

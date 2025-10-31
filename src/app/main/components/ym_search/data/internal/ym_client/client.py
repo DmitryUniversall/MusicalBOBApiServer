@@ -60,13 +60,11 @@ class CustomYandexMusicClient(CustomYandexMusicClientI):
 
     async def get_audio_sources_by_url(self, url: str) -> tuple[str, ...]:
         track = await self.get_track_by_url(url)
-
-        return await self.get_audio_sources_by_raw_track(track=track)
+        return await self.get_audio_sources_by_raw(raw=track)
 
     async def get_lyrics_by_url(self, url: str) -> Optional[str]:
         track = await self.get_track_by_url(url)
-
-        return await self.get_lyrics_by_raw_track(track=track)
+        return await self.get_lyrics_by_raw(raw=track)
 
     async def get_full_tracks(self, tracks: Iterable[yandex_music.TrackShort]) -> tuple[yandex_music.Track, ...]:
         return await gather_all((short_track.fetch_track_async() for short_track in tracks))
@@ -100,16 +98,16 @@ class CustomYandexMusicClient(CustomYandexMusicClientI):
                 message=f"Failed to fetch playlist from yandex music with {username=}; {playlist_id=}"
             ) from error
 
-    async def get_audio_sources_by_raw_track(self, track: yandex_music.Track) -> tuple[str, ...]:
+    async def get_audio_sources_by_raw(self, raw: yandex_music.Track) -> tuple[str, ...]:
         try:
-            download_info = await track.get_download_info_async()
+            download_info = await raw.get_download_info_async()
             return await gather_all((d_inf.get_direct_link_async() for d_inf in download_info))
         except YMUnauthorizedError as error:
-            _logger.warning(f"Failed to get audio sources for track '{track.track_id}': {error.__class__.__name__}: {error}")
-            raise ContentUnavailableHttpException(message=f"Failed to get audio sources for track '{track.track_id}'") from error
+            _logger.warning(f"Failed to get audio sources for track '{raw.track_id}': {error.__class__.__name__}: {error}")
+            raise ContentUnavailableHttpException(message=f"Failed to get audio sources for track '{raw.track_id}'") from error
 
-    async def get_lyrics_by_raw_track(self, track: yandex_music.Track) -> Optional[str]:
-        supplement = await track.get_supplement_async()
+    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> Optional[str]:
+        supplement = await raw.get_supplement_async()
 
         if lyrics := supplement.lyrics:
             return lyrics.full_lyrics

@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, Any
+
+from pydantic import Field
 
 from src.app.core import BaseSchema
 from .search_platform import SearchPlatform
@@ -9,3 +11,5 @@ class BaseSearchEntity(BaseSchema):
     source: str
     platform: SearchPlatform
     image_source: Optional[str]
+
+    raw: Any = Field(exclude=True)

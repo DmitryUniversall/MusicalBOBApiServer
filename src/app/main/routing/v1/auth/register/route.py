@@ -10,7 +10,7 @@ _auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.post("/register/")
-async def register_route(request: Request, payload: RegisterRequestDTO) -> ApplicationJsonResponse:
+async def register_route(request: Request, payload: RegisterRequestDTO) -> ApplicationJsonResponse[RegisterResponseDTO]:
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 

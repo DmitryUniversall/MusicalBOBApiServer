@@ -9,6 +9,6 @@ _auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.get("/logout/")
-async def logout_route(auth_info: AuthInfo = Depends(_jwt_auth)) -> ApplicationJsonResponse:
+async def logout_route(auth_info: AuthInfo = Depends(_jwt_auth)) -> ApplicationJsonResponse[None]:
     await _auth_service.revoke_session(auth_info.user.id, auth_info.session.session_uuid)
     return SuccessResponse[None]()

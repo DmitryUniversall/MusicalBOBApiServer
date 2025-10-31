@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from src.app.main.components.common_search import Playlist, Track, AudioSource
 from src.base.utils.interface import InterfaceMeta
@@ -19,13 +18,21 @@ class YMSearchRepositoryI(ABC, metaclass=InterfaceMeta):
         ...
 
     @abstractmethod
-    async def search_track_by_name(self, query: str) -> Optional[Track]:
+    async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         ...
 
     @abstractmethod
-    async def get_audio_sources(self, url: str) -> tuple[AudioSource, ...]:
+    async def get_lyrics_by_url(self, url: str) -> str:
         ...
 
     @abstractmethod
-    async def get_lyrics(self, url: str) -> Optional[str]:
+    async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
+        ...
+
+    @abstractmethod
+    async def get_lyrics_for_track(self, track: Track) -> str:
+        ...
+
+    @abstractmethod
+    async def search_track_by_name(self, query: str) -> Track:
         ...

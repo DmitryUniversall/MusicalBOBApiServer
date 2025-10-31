@@ -9,7 +9,7 @@ _auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.post("/refresh/")
-async def refresh_route(payload: RefreshRequestDTO, request: Request) -> ApplicationJsonResponse:
+async def refresh_route(payload: RefreshRequestDTO, request: Request) -> ApplicationJsonResponse[RefreshResponseDTO]:
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 

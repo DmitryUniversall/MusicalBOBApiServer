@@ -10,7 +10,7 @@ _auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 @auth_router_v1.post("/login/")
-async def login_route(request: Request, payload: LoginRequestDTO) -> ApplicationJsonResponse:
+async def login_route(request: Request, payload: LoginRequestDTO) -> ApplicationJsonResponse[LoginResponseDTO]:
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 
@@ -20,7 +20,7 @@ async def login_route(request: Request, payload: LoginRequestDTO) -> Application
         **payload.model_dump()
     )
 
-    return SuccessResponse(
+    return SuccessResponse[LoginResponseDTO](
         data=LoginResponseDTO(
             user=auth_info.user.convert_to(UserPrivate),
             session=auth_info.session.convert_to(AuthSessionPrivate),

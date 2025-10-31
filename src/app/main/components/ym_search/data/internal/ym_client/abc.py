@@ -46,17 +46,13 @@ class CustomYandexMusicClientI(ABC, yandex_music.ClientAsync, metaclass=Interfac
         ...
 
     @abstractmethod
-    async def get_playlist(
-            self,
-            username: str,
-            playlist_id: int
-    ) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
+    async def get_playlist(self, username: str, playlist_id: int) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
         ...
 
     @abstractmethod
-    async def get_audio_sources_by_raw_track(self, track: yandex_music.Track) -> tuple[str, ...]:
+    async def get_audio_sources_by_raw(self, raw: yandex_music.Track) -> tuple[str, ...]:
         ...
 
     @abstractmethod
-    async def get_lyrics_by_raw_track(self, track: yandex_music.Track) -> Optional[str]:
+    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> Optional[str]:
         ...

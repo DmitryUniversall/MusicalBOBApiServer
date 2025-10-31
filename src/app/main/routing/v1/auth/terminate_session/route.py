@@ -13,7 +13,7 @@ _jwt_auth = HTTPJWTBearerAuthDependency()
 async def terminate_session_route(
         session_uuid: UUIDString,
         auth_info: AuthInfo = Depends(_jwt_auth)
-) -> ApplicationJsonResponse:
+) -> ApplicationJsonResponse[None]:
     await _auth_service.revoke_session(user_id=auth_info.user.id, session_uuid=session_uuid)
 
     return SuccessResponse[None]()

@@ -3,9 +3,9 @@ from typing import Optional, Iterable
 import yandex_music
 
 from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource
-from ..ym_client import CustomYandexMusicClientI
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
 from src.base.utils.async_tools import gather_for_each
+from ..ym_client import CustomYandexMusicClientI
 
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
@@ -62,7 +62,6 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
             tracks: Optional[Iterable[yandex_music.Track]] = None,
             **kwargs
     ) -> Playlist:
-
         if playlist.owner is None:
             raise
 
@@ -96,20 +95,37 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
 
         return Track(**data)
 
-    def wrap_with_audio_source(self, sources: Iterable[str]) -> tuple[AudioSource, ...]:
+    def _wrap_with_audio_source(self, sources: Iterable[str]) -> tuple[AudioSource, ...]:
         return tuple(AudioSource(source=source) for source in sources)
 
-    async def get_album_by_url(self, url: str) -> Playlist:
-        album, tracks = await self._ym_client.get_album_with_tracks_by_url(url=url)
-        return await self._ym_album_to_playlist(album=album, tracks=tracks, source=url)
+    async def get_track_by_url(self, url: str) -> Track:
+        track = await self._ym_client.get_track_by_url(url=url)
+        return await self._ym_track_to_track(track=track, source=url)
 
     async def get_playlist_by_url(self, url: str) -> Playlist:
         playlist, tracks = await self._ym_client.get_playlist_with_tracks_by_url(url=url)
         return await self._ym_playlist_to_playlist(playlist=playlist, tracks=tracks, source=url)
 
-    async def get_track_by_url(self, url: str) -> Track:
-        track = await self._ym_client.get_track_by_url(url=url)
-        return await self._ym_track_to_track(track=track, source=url)
+    async def get_album_by_url(self, url: str) -> Playlist:
+        album, tracks = await self._ym_client.get_album_with_tracks_by_url(url=url)
+        return await self._ym_album_to_playlist(album=album, tracks=tracks, source=url)
+
+    async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
+        return self._wrap_with_audio_source(await self._ym_client.get_audio_sources_by_url(url=url))
+
+    async def get_lyrics_by_url(self, url: str) -> str:
+        return await self._ym_client.get_lyrics_by_url(url=url)
+
+    async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
+        if track.raw is not None and isinstance(track.raw, yandex_music.Track):
+            return self._wrap_with_audio_source(await self._ym_client.get_audio_sources_by_raw(raw=track.raw))
+
+        return await self.get_audio_sources_by_url(url=track.source)
+
+    async def get_lyrics_for_track(self, track: Track) -> str:
+        if track.raw is not None and isinstance(track.raw, yandex_music.Track):
+            return await self._ym_client.get_lyrics_by_raw(raw=track.raw)
+        return await self._ym_client.get_lyrics_by_url(url=track.source)
 
     async def search_track_by_name(self, query: str) -> Optional[Track]:
         tracks = await self._ym_client.search_track_by_name(query)
@@ -121,9 +137,3 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         best_match_track.variations = tracks[1:]
 
         return best_match_track
-
-    async def get_audio_sources(self, url: str) -> tuple[AudioSource, ...]:
-        return self.wrap_with_audio_source(await self._ym_client.get_audio_sources_by_url(url=url))
-
-    async def get_lyrics(self, url: str) -> Optional[str]:
-        return await self._ym_client.get_lyrics_by_url(url=url)
