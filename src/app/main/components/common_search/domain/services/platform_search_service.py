@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Iterable
 
-from src.app.main.components.common_search import Track
-from src.app.main.components.common_search.domain.entities.audio_sources import AudioSource
-from src.app.main.components.common_search.domain.entities.media_content import MediaContent
+from src.app.main.components.common_search.domain.entities import Track, AudioSource, MediaContent
 from src.base.utils.async_tools import gather_for_each
 
 
@@ -24,7 +22,7 @@ class AbstractPlatformSearchService(ABC):
         ...
 
     @abstractmethod
-    async def get_lyrics_by_url(self, url: str) -> Optional[str]:
+    async def get_lyrics_by_url(self, url: str) -> str:
         ...
 
     @abstractmethod

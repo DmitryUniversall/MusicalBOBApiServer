@@ -30,7 +30,7 @@ class CustomYandexMusicClientI(ABC, yandex_music.ClientAsync, metaclass=Interfac
         ...
 
     @abstractmethod
-    async def get_lyrics_by_url(self, url: str) -> Optional[str]:
+    async def get_lyrics_by_url(self, url: str) -> str:
         ...
 
     @abstractmethod
@@ -54,5 +54,5 @@ class CustomYandexMusicClientI(ABC, yandex_music.ClientAsync, metaclass=Interfac
         ...
 
     @abstractmethod
-    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> Optional[str]:
+    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> str:
         ...

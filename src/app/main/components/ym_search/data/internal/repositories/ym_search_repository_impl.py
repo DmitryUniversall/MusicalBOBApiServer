@@ -3,6 +3,7 @@ from typing import Optional, Iterable
 import yandex_music
 
 from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource
+from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
 from src.base.utils.async_tools import gather_for_each
 from ..ym_client import CustomYandexMusicClientI
@@ -125,13 +126,14 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
     async def get_lyrics_for_track(self, track: Track) -> str:
         if track.raw is not None and isinstance(track.raw, yandex_music.Track):
             return await self._ym_client.get_lyrics_by_raw(raw=track.raw)
+
         return await self._ym_client.get_lyrics_by_url(url=track.source)
 
-    async def search_track_by_name(self, query: str) -> Optional[Track]:
+    async def search_track_by_name(self, query: str) -> Track:
         tracks = await self._ym_client.search_track_by_name(query)
 
         if not tracks:
-            return None
+            raise SearchFailedNotFoundHttpException()
 
         best_match_track = tracks[0]
         best_match_track.variations = tracks[1:]

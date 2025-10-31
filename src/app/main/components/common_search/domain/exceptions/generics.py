@@ -28,3 +28,12 @@ class ContentUnavailableHttpException(SearchHTTPException):
             **project_settings.APPLICATION_STATUS_CODES.SEARCH.UNAVAILABLE_CONTENT,
             **payload_kwargs
         })
+
+
+class BadSearchObjectTypeHttpException(SearchHTTPException):
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
+            "ok": False,
+            **project_settings.APPLICATION_STATUS_CODES.SEARCH.BAD_OBJECT_TYPE,
+            **payload_kwargs
+        })

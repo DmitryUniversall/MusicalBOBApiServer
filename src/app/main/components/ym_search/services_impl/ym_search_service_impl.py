@@ -35,7 +35,7 @@ class YMSearchServiceImpl(YMSearchServiceI):
     async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         return await self._ym_search_repository.get_audio_sources_by_url(url)
 
-    async def get_lyrics_by_url(self, url: str) -> Optional[str]:
+    async def get_lyrics_by_url(self, url: str) -> str:
         return await self._ym_search_repository.get_lyrics_by_url(url=url)
 
     async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:

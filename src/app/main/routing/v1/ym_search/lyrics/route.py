@@ -1,29 +1,30 @@
-from functools import lru_cache
-from typing import Optional
-
 from src.app.main.common import ApplicationJsonResponse, SuccessResponse
 from src.app.main.components.common_search import Track, MediaContent
-from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
-from src.app.main.routing.v1.ym_search import ym_search_router_v1
-from src.app.main.routing.v1.ym_search.lyrics.dto import LyricsSearchResult
+from src.app.main.components.common_search.domain.exceptions import BadSearchObjectTypeHttpException
+from src.app.main.components.translation.domain import TranslationServiceI
+from src.app.main.components.ym_search.domain import YMSearchServiceI
+from src.app.main.routing.v1.ym_search.component_router_v1 import ym_search_router_v1
+from .dto import LyricsSearchResult
 
-_ym_search_service = YMSearchServiceI.get_implementation()  # type: ignore
-_translation_service = TranslationServiceI.get_implementation()  # type: ignore
 
+@ym_search_router_v1.get("/lyrics", response_model=None)  # TODO: Add cache
+async def ym_search_lyrics_route(query: str, translate_to: str | None = None) -> ApplicationJsonResponse[LyricsSearchResult]:
+    _ym_search_service = YMSearchServiceI.get_implementation()  # type: ignore
+    _translation_service = TranslationServiceI.get_implementation()  # type: ignore
 
-@ym_search_router_v1.get("/lyrics")
-@lru_cache(maxsize=None)
-def ym_search_lyrics_route(query: str, translate_to: Optional[str] = None) -> ApplicationJsonResponse[LyricsSearchResult]:
-    media: MediaContent = _ym_search_service.search(query)
+    media: MediaContent = await _ym_search_service.search(query)
 
     if type(media) is not Track:
-        raise SearchFailedNotFoundHttpException(message="Specified object cannot have lyrics")
+        raise BadSearchObjectTypeHttpException()
 
-    lyrics: Optional[str] = _ym_search_service.get_lyrics_for_track(query)
+    lyrics: str = await _ym_search_service.get_lyrics_for_track(query)
 
-    translations: Optional[dict[str, str]] = None
+    translations: dict[str, str] = {}
     if translate_to is not None:
-        translations = {language_code: _translation_service.translate_to(lyrics, language_code) for language_code in translate_to.split(";")}
+        translations.update({
+            language_code: await _translation_service.translate(lyrics, language_code)
+            for language_code in translate_to.split(";")
+        })
 
     return SuccessResponse[LyricsSearchResult](
         data=LyricsSearchResult(

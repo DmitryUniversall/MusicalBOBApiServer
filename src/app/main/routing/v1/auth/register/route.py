@@ -6,11 +6,11 @@ from src.app.main.components.users import UserPrivate
 from .dto import RegisterRequestDTO, RegisterResponseDTO
 from ..component_router_v1 import auth_router_v1
 
-_auth_service = AuthServiceI.get_implementation()  # type: ignore
 
-
-@auth_router_v1.post("/register/")
+@auth_router_v1.post("/register/", response_model=None)
 async def register_route(request: Request, payload: RegisterRequestDTO) -> ApplicationJsonResponse[RegisterResponseDTO]:
+    _auth_service = AuthServiceI.get_implementation()  # type: ignore
+
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 

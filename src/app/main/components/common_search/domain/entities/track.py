@@ -6,8 +6,9 @@ from .playlist import Playlist
 
 
 class Track(Media):
-    duration: Optional[int]
-    lyrics: Optional[str]
-    playlist: Optional[Playlist]
-    audio_sources: Optional[list[AudioSource]]
+    audio_sources: list[AudioSource] = []
     variations: list['Track'] = []
+
+    duration: Optional[int] = None
+    lyrics: Optional[str] = None
+    playlist: Optional[Playlist] = None

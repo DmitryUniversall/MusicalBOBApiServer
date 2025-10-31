@@ -5,11 +5,11 @@ from src.app.main.components.auth import AuthServiceI
 from .dto import RefreshRequestDTO, RefreshResponseDTO
 from ..component_router_v1 import auth_router_v1
 
-_auth_service = AuthServiceI.get_implementation()  # type: ignore
 
-
-@auth_router_v1.post("/refresh/")
+@auth_router_v1.post("/refresh/", response_model=None)
 async def refresh_route(payload: RefreshRequestDTO, request: Request) -> ApplicationJsonResponse[RefreshResponseDTO]:
+    _auth_service = AuthServiceI.get_implementation()  # type: ignore
+
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 

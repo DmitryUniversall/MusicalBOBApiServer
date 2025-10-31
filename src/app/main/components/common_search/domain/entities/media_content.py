@@ -1,5 +1,7 @@
-from src.app.main.components.common_search.domain import Playlist, Track
 from enum import Enum
+
+from .playlist import Playlist
+from .track import Track
 
 type MediaContent = Track | Playlist
 

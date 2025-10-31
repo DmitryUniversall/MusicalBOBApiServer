@@ -127,6 +127,10 @@
             "UNAVAILABLE_CONTENT": {
                 "application_status_code": 4002,
                 "message": "Requested content unavailable"
+            },
+            "BAD_OBJECT_TYPE": {
+                "application_status_code": 4003,
+                "message": "Object found for specified query has incorrect type"
             }
         }
     }

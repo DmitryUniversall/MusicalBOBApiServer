@@ -62,7 +62,7 @@ class CustomYandexMusicClient(CustomYandexMusicClientI):
         track = await self.get_track_by_url(url)
         return await self.get_audio_sources_by_raw(raw=track)
 
-    async def get_lyrics_by_url(self, url: str) -> Optional[str]:
+    async def get_lyrics_by_url(self, url: str) -> str:
         track = await self.get_track_by_url(url)
         return await self.get_lyrics_by_raw(raw=track)
 
@@ -106,10 +106,10 @@ class CustomYandexMusicClient(CustomYandexMusicClientI):
             _logger.warning(f"Failed to get audio sources for track '{raw.track_id}': {error.__class__.__name__}: {error}")
             raise ContentUnavailableHttpException(message=f"Failed to get audio sources for track '{raw.track_id}'") from error
 
-    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> Optional[str]:
+    async def get_lyrics_by_raw(self, raw: yandex_music.Track) -> str:
         supplement = await raw.get_supplement_async()
 
         if lyrics := supplement.lyrics:
             return lyrics.full_lyrics
 
-        return None
+        raise SearchFailedNotFoundHttpException(messsage="Failed to get lyrics for specified track")

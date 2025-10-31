@@ -1,5 +1,7 @@
 from .base import SearchHTTPException
 from .generics import (
     SearchFailedNotFoundHttpException,
-    BadUrlFormatHttpException
+    BadUrlFormatHttpException,
+    ContentUnavailableHttpException,
+    BadSearchObjectTypeHttpException
 )
