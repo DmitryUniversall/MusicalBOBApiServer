@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 from src.app.main.components.common_search import AudioSource, MediaContent, Track
 from src.app.main.components.common_search.domain.exceptions import BadUrlFormatHttpException, SearchFailedNotFoundHttpException

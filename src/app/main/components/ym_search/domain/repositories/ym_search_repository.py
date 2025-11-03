@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.app.main.components.common_search import Playlist, Track, AudioSource
+from src.app.main.components.common_search import Playlist, Track, AudioSource, Lyrics
 from src.base.utils.interface import InterfaceMeta
 
 
@@ -22,7 +22,7 @@ class YMSearchRepositoryI(ABC, metaclass=InterfaceMeta):
         ...
 
     @abstractmethod
-    async def get_lyrics_by_url(self, url: str) -> str:
+    async def get_lyrics_by_url(self, url: str) -> Lyrics:
         ...
 
     @abstractmethod
@@ -30,7 +30,7 @@ class YMSearchRepositoryI(ABC, metaclass=InterfaceMeta):
         ...
 
     @abstractmethod
-    async def get_lyrics_for_track(self, track: Track) -> str:
+    async def get_lyrics_for_track(self, track: Track) -> Lyrics:
         ...
 
     @abstractmethod

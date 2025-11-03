@@ -1,17 +1,25 @@
+import logging
+from datetime import datetime, timedelta
 from typing import Optional, Iterable
 
 import yandex_music
 
-from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource
+from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource, Lyrics
 from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
+from src.base.state import project_settings
 from src.base.utils.async_tools import gather_for_each
 from ..ym_client import CustomYandexMusicClientI
+
+_logger = logging.getLogger(__name__)
 
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
     def __init__(self) -> None:
         self._ym_client: CustomYandexMusicClientI = CustomYandexMusicClientI.get_implementation()
+        self._track_cache: dict[str, Track] = {}
+        self._lyrics_cache: dict[str, Lyrics] = {}
+        self._audio_source_cache: dict[str, tuple[AudioSource, ...]] = {}  # TODO: Make normal cache
 
     async def _ym_artist_to_author(self, artist: yandex_music.Artist, **kwargs) -> 'Author':
         data = {
@@ -99,9 +107,19 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
     def _wrap_with_audio_source(self, sources: Iterable[str]) -> tuple[AudioSource, ...]:
         return tuple(AudioSource(source=source) for source in sources)
 
-    async def get_track_by_url(self, url: str) -> Track:
+    async def _get_track_by_url(self, url: str) -> Track:
         track = await self._ym_client.get_track_by_url(url=url)
         return await self._ym_track_to_track(track=track, source=url)
+
+    async def get_track_by_url(self, url: str) -> Track:
+        if (cached := self._track_cache.get(url, None)) is not None:
+            _logger.debug(f"Found cached track for url: {url}")
+            return cached
+
+        result = await self._get_track_by_url(url)
+        self._track_cache[url] = result
+
+        return result
 
     async def get_playlist_by_url(self, url: str) -> Playlist:
         playlist, tracks = await self._ym_client.get_playlist_with_tracks_by_url(url=url)
@@ -111,11 +129,32 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         album, tracks = await self._ym_client.get_album_with_tracks_by_url(url=url)
         return await self._ym_album_to_playlist(album=album, tracks=tracks, source=url)
 
-    async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
+    async def _get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         return self._wrap_with_audio_source(await self._ym_client.get_audio_sources_by_url(url=url))
 
-    async def get_lyrics_by_url(self, url: str) -> str:
-        return await self._ym_client.get_lyrics_by_url(url=url)
+    async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
+        if (cached := self._audio_source_cache.get(url, None)) is not None and len(cached) > 0:
+            if datetime.now() - cached[0].created_at < timedelta(seconds=project_settings.YM_AUDIO_SOURCE_EXPIRE):  # Expired
+                _logger.debug(f"Found cached audio source for url: {url}")
+                return cached
+
+            del self._audio_source_cache[url]
+
+        result = await self._get_audio_sources_by_url(url)
+        self._audio_source_cache[url] = result
+        return result
+
+    async def _get_lyrics_by_url(self, url: str) -> Lyrics:
+        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=url))
+
+    async def get_lyrics_by_url(self, url: str) -> Lyrics:
+        if (cached := self._lyrics_cache.get(url, None)) is not None:
+            _logger.debug(f"Found cached lyrics for url: {url}")
+            return cached
+
+        result = await self._get_lyrics_by_url(url)
+        self._lyrics_cache[url] = result
+        return result
 
     async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
         if track.raw is not None and isinstance(track.raw, yandex_music.Track):
@@ -123,11 +162,11 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
 
         return await self.get_audio_sources_by_url(url=track.source)
 
-    async def get_lyrics_for_track(self, track: Track) -> str:
+    async def get_lyrics_for_track(self, track: Track) -> Lyrics:
         if track.raw is not None and isinstance(track.raw, yandex_music.Track):
-            return await self._ym_client.get_lyrics_by_raw(raw=track.raw)
+            return Lyrics(lyrics=await self._ym_client.get_lyrics_by_raw(raw=track.raw))
 
-        return await self._ym_client.get_lyrics_by_url(url=track.source)
+        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=track.source))
 
     async def search_track_by_name(self, query: str) -> Track:
         tracks = await self._ym_client.search_track_by_name(query)

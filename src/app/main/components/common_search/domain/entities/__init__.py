@@ -6,3 +6,4 @@ from .playlist import Playlist
 from .search_entitiy import BaseSearchEntity
 from .search_platform import SearchPlatform
 from .track import Track
+from .lyrics import Lyrics

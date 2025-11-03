@@ -17,7 +17,7 @@ from src.base.utils.async_tools import gather_all
 _logger = getLogger(__name__)
 
 
-class CustomYandexMusicClient(CustomYandexMusicClientI):
+class CustomYandexMusicClientImpl(CustomYandexMusicClientI):
     async def search_track_by_name(self: yandex_music.ClientAsync, query: str) -> tuple[yandex_music.Track, ...]:
         result = await self.search(text=query, type_='track')
 

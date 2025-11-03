@@ -4,6 +4,8 @@ from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI
 
+from src.app.main import *  # type: ignore Init all components
+
 from execution_mode import ExecutionMode
 from src.app.core.db import BaseModel
 from src.app.main.common.db import AsyncDatabaseManagerST
