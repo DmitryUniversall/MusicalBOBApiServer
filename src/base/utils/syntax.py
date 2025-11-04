@@ -2,11 +2,42 @@ import functools
 import inspect
 import logging
 import warnings
-from typing import Callable
+from typing import Callable, Any
 
 from src.base.exceptions.generics import NoneObjectError
 
 _logger = logging.getLogger(__name__)
+
+
+class ValueWrapper[T: Any]:
+    def __init__(self, value: T) -> None:
+        self._value = value
+
+    def __repr__(self):
+        return f"Wrapper({self.value!r})"
+
+    @property
+    def value(self) -> T:
+        return self._value
+
+    def also(self, func: Callable[[T], None]) -> 'ValueWrapper[T]':
+        func(self._value)
+        return self
+
+    def also_if(self, func: Callable[[T], None], *, check: Callable[[T], bool]) -> 'ValueWrapper[T]':
+        if check(self._value):
+            func(self._value)
+
+        return self
+
+    def then[U: Any](self, func: Callable[[T], U]) -> 'ValueWrapper[U]':
+        return ValueWrapper[U](func(self._value))
+
+    def let[U: Any](self, func: Callable[[T], U]) -> U:
+        return func(self._value)
+
+    def as_[U: Any](self, type_: type[U]) -> 'ValueWrapper[U]':
+        return self.let(type_)
 
 
 def default_any[_T](

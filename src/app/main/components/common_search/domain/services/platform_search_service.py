@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Optional
 
 from src.app.main.components.common_search.domain.entities import Track, AudioSource, MediaContent, Lyrics
 from src.base.state import project_settings
@@ -38,8 +38,8 @@ class AbstractPlatformSearchService(ABC):
             return await self.get_by_url(query)
         return await self.get_by_name(query)
 
-    async def search(self, query: str, timeout: int = None) -> MediaContent:
-        with asyncio.timeout(delay=default_any(timeout, project_settings.SEARCH_CRITICAL_TIMEOUT)):
+    async def search(self, query: str, timeout: Optional[float] = None) -> MediaContent:
+        async with asyncio.timeout(delay=default_any(timeout, project_settings.SEARCH_CRITICAL_TIMEOUT)):
             return await self._search(query)
 
     async def search_many(self, queries: Iterable[str]) -> tuple[MediaContent, ...]:
