@@ -6,7 +6,7 @@ import yandex_music
 from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource, Lyrics
 from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
-from src.base.cache.cache import CacheContainer
+from src.base.utils.cache import CacheContainer
 from src.base.state import project_settings
 from src.base.utils.async_tools import gather_for_each
 from src.base.utils.syntax import ValueWrapper
@@ -17,11 +17,11 @@ _logger = logging.getLogger(__name__)
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
     def __init__(self) -> None:
-        self._ym_client: CustomYandexMusicClientI = CustomYandexMusicClientI.get_implementation()
+        self._ym_client: CustomYandexMusicClientI = CustomYandexMusicClientI.get_implementation()  # TODO: Make normal DI
 
         self._track_cache: CacheContainer[str, Track] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)
         self._lyrics_cache: CacheContainer[str, Lyrics] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)
-        self._audio_source_cache: CacheContainer[str, tuple[AudioSource, ...]] = CacheContainer(default_ttl=project_settings.AUDIO_SOURCE_CACHE_EXPIRE)
+        self._audio_source_cache: CacheContainer[str, tuple[AudioSource, ...]] = CacheContainer(default_ttl=project_settings.YM_AUDIO_SOURCE_CACHE_EXPIRE)
 
     async def _ym_artist_to_author(self, artist: yandex_music.Artist, **kwargs) -> 'Author':
         data = {
