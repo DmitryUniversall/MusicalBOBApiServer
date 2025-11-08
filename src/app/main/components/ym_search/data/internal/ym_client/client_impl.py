@@ -1,7 +1,7 @@
 import re
 from itertools import chain
 from logging import getLogger
-from typing import Optional, Iterable
+from typing import Iterable
 
 import yandex_music
 from yandex_music.exceptions import (
@@ -11,13 +11,13 @@ from yandex_music.exceptions import (
 
 from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException, BadUrlFormatHttpException
 from src.app.main.components.common_search.domain.exceptions.generics import ContentUnavailableHttpException
-from src.app.main.components.ym_search.data.internal.ym_client.abc import CustomYandexMusicClientI
+from src.app.main.components.ym_search.data.internal.ym_client.abc import CustomAsyncYMClientI
 from src.base.utils.async_tools import gather_all
 
 _logger = getLogger(__name__)
 
 
-class CustomYandexMusicClientImpl(CustomYandexMusicClientI):
+class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
     async def search_track_by_name(self: yandex_music.ClientAsync, query: str) -> tuple[yandex_music.Track, ...]:
         result = await self.search(text=query, type_='track')
 

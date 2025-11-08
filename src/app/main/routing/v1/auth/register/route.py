@@ -1,16 +1,26 @@
+from dependency_injector.wiring import Provide
+from fastapi import Depends
 from starlette.requests import Request
 
+from src.app.core import route_inject
 from src.app.main.common import ApplicationJsonResponse, ForbiddenHTTPException, CreatedResponse
 from src.app.main.components.auth import AuthServiceI, AuthSessionPrivate
 from src.app.main.components.users import UserPrivate
+from src.app.main.di import GlobalContainer
 from .dto import RegisterRequestDTO, RegisterResponseDTO
 from ..component_router_v1 import auth_router_v1
 
 
 @auth_router_v1.post("/register/", response_model=None)
-async def register_route(request: Request, payload: RegisterRequestDTO) -> ApplicationJsonResponse[RegisterResponseDTO]:
-    _auth_service = AuthServiceI.get_implementation()  # type: ignore
-
+@route_inject(
+    _auth_service=Depends(Provide[GlobalContainer.shortcut_auth_service])
+)
+async def register_route(
+        *,
+        request: Request,
+        payload: RegisterRequestDTO,
+        _auth_service: AuthServiceI
+) -> ApplicationJsonResponse[RegisterResponseDTO]:
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")
 

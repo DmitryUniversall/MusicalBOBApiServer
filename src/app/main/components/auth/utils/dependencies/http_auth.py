@@ -1,14 +1,14 @@
 from starlette.requests import Request
 
-from src.app.main.components.auth.domain.entities.auth_info import AuthInfo
-from src.app.main.components.auth.domain.services.auth_service import AuthServiceI
+from src.app.main.components.auth.domain import AuthServiceI, AuthInfo
 from ..bearer_auth_mixin import BearerAuthMixin
-
-_auth_service = AuthServiceI.get_implementation()  # type: ignore
 
 
 class HTTPJWTBearerAuthDependency(BearerAuthMixin):
+    def __init__(self, auth_service: AuthServiceI) -> None:
+        self._auth_service = auth_service
+
     async def __call__(self, request: Request) -> AuthInfo:
         authorization = request.headers.get("Authorization")
         access_token = await self.extract_token(authorization)
-        return await _auth_service.authenticate(access_token)
+        return await self._auth_service.authenticate(access_token)

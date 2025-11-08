@@ -10,14 +10,14 @@ from src.base.utils.cache import CacheContainer
 from src.base.state import project_settings
 from src.base.utils.async_tools import gather_for_each
 from src.base.utils.syntax import ValueWrapper
-from ..ym_client import CustomYandexMusicClientI
+from ..ym_client import CustomAsyncYMClientI
 
 _logger = logging.getLogger(__name__)
 
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
-    def __init__(self) -> None:
-        self._ym_client: CustomYandexMusicClientI = CustomYandexMusicClientI.get_implementation()  # TODO: Make normal DI
+    def __init__(self, ym_client: CustomAsyncYMClientI) -> None:
+        self._ym_client = ym_client
 
         self._track_cache: CacheContainer[str, Track] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)
         self._lyrics_cache: CacheContainer[str, Lyrics] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)

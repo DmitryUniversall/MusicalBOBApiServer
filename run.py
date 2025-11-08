@@ -42,5 +42,6 @@ _logger.info(f"Successful logger and settings setup")
 _logger.info(f"Starting application with execution mode: {settings.MODE}")
 
 # Run
-application = fastapi.FastAPI()
-asyncio.run(_setup(application))
+if __name__ == '__main__':
+    application = fastapi.FastAPI()
+    asyncio.run(_setup(application))

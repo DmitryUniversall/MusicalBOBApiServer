@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 
-from src.base.utils.interface import InterfaceMeta
 from src.base.utils.types import UUIDString
 from ..entities import AuthSessionInternal
 
 
-class AuthSessionRepositoryI(ABC, metaclass=InterfaceMeta):
+class AuthSessionRepositoryI(ABC):
     @abstractmethod
     async def create_session(
             self,

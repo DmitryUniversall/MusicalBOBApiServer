@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 
 from src.app.main.components.common_search import Playlist, Track, AudioSource, Lyrics
-from src.base.utils.interface import InterfaceMeta
 
 
-class YMSearchRepositoryI(ABC, metaclass=InterfaceMeta):
+class YMSearchRepositoryI(ABC):
     @abstractmethod
     async def get_album_by_url(self, url: str) -> Playlist:
         ...

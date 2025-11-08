@@ -1,2 +1,2 @@
-from .client import CustomYandexMusicClientImpl
-from .abc import CustomYandexMusicClientI
+from .client_impl import CustomAsyncYMClientImpl
+from .abc import CustomAsyncYMClientI

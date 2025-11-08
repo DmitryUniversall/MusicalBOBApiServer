@@ -6,8 +6,8 @@ from src.base.exceptions import DoesNotExistError, AlreadyExistsError
 
 
 class UsersRepositoryImpl(UsersRepositoryI):
-    def __init__(self) -> None:
-        self._user_model_adapter = UserModelAdapter()
+    def __init__(self, user_model_adapter: UserModelAdapter) -> None:
+        self._user_model_adapter = user_model_adapter
 
     async def create_user(self, username: str, password_hashed: str, **fields) -> UserInternal:
         try:

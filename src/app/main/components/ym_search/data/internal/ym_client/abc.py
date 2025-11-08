@@ -1,14 +1,12 @@
 from abc import abstractmethod, ABC
-from typing import Optional, Iterable
+from typing import Iterable
 
 import yandex_music
-
-from src.base.utils.interface import InterfaceMeta
 
 yandex_music.ClientAsync._ClientAsync__notice_displayed = True
 
 
-class CustomYandexMusicClientI(ABC, yandex_music.ClientAsync, metaclass=InterfaceMeta):
+class CustomAsyncYMClientI(ABC, yandex_music.ClientAsync):
     @abstractmethod
     async def search_track_by_name(self: yandex_music.ClientAsync, query: str) -> tuple[yandex_music.Track, ...]:
         ...

@@ -1,1 +1,1 @@
-from . import di  # Bind implementations
+from .di import UsersDataContainer

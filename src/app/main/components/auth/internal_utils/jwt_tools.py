@@ -1,13 +1,11 @@
 import uuid
-from typing import Dict, Any, Union, TYPE_CHECKING
+from typing import Dict, Any, Union
 
 import jwt
 
 from src.base.state import project_settings
 from src.base.utils.types import UUIDString, JsonDict
-
-if TYPE_CHECKING:
-    from src.app.main.components.auth.domain import AccessTokenPayload, RefreshTokenPayload
+from ..domain import AccessTokenPayload, RefreshTokenPayload
 
 
 def generate_jwt_token_id() -> str:

@@ -17,7 +17,7 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
     AUTH_USER_SESSION_REDIS_KEY: str = AUTH_USER_SESSIONS_REDIS_KEY + ":{}"
 
     def __init__(self) -> None:
-        super().__init__(db=project_settings.AUTH_REDIS_DB_ID)
+        super().__init__(db=project_settings.AUTH_REDIS_DB_ID)  # TODO: pass redis via DI
 
     def _get_session_key(self, user_id: int, session_uuid: UUIDString) -> str:
         return self.AUTH_USER_SESSION_REDIS_KEY.format(user_id, session_uuid)

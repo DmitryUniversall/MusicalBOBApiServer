@@ -1,4 +1,3 @@
-from . import utils
 from . import users
 from . import auth
 from . import translation

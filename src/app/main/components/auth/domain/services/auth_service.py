@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 
-from src.base.utils.interface import InterfaceMeta
 from src.base.utils.types import UUIDString
 from ..entities import AuthInfo, AuthTokenPair
 
 
-class AuthServiceI(ABC, metaclass=InterfaceMeta):
+class AuthServiceI(ABC):
     @abstractmethod
     async def authenticate(self, access_token: str) -> AuthInfo:
         ...

@@ -1,3 +1,2 @@
-from . import di  # Bind implementations
-
+from .di import UsersComponentContainer
 from .domain import *

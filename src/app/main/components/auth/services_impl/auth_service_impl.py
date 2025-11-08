@@ -11,9 +11,13 @@ from ..internal_utils import generate_jwt_token_id, create_access_token, create_
 
 
 class AuthServiceImpl(AuthServiceI):
-    def __init__(self) -> None:
-        self._session_service = AuthSessionServiceI.get_implementation()  # type: ignore
-        self._user_service = UsersServiceI.get_implementation()  # type: ignore
+    def __init__(
+            self,
+            session_service: AuthSessionServiceI,
+            user_service: UsersServiceI
+    ) -> None:
+        self._session_service: AuthSessionServiceI = session_service
+        self._user_service: UsersServiceI = user_service
 
     async def _log_security_event(self) -> None:  # TODO
         pass
