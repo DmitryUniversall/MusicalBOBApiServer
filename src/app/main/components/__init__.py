@@ -3,3 +3,5 @@ from . import auth
 from . import translation
 from . import common_search
 from . import ym_search
+
+from .di import ComponentsContainer

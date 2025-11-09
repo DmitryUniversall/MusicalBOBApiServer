@@ -1,3 +1,2 @@
-from . import di  # Bind implementations
-
+from .di import TranslationComponentContainer
 from .domain import *

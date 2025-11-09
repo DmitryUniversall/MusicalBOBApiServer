@@ -2,22 +2,23 @@ import logging
 
 from starlette.websockets import WebSocket
 
-from src.app.main.components.auth import AuthServiceI, AuthInfo
-from src.app.main.components.auth.domain.exceptions import AuthHTTPException
+from src.app.main.components.auth.domain import AuthServiceI, AuthInfo, AuthHTTPException
 from src.base.state import project_settings
 from ..bearer_auth_mixin import BearerAuthMixin
 
-_auth_service = AuthServiceI.get_implementation()  # type: ignore
 _logger = logging.getLogger(__name__)
 
 
 class WSJWTBearerAuthDependency(BearerAuthMixin):
+    def __init__(self, auth_service: AuthServiceI) -> None:
+        self._auth_service = auth_service
+
     async def __call__(self, websocket: WebSocket) -> AuthInfo | None:
         authorization = websocket.headers.get("Authorization")
 
         try:
             access_token = await self.extract_token(authorization)
-            return await _auth_service.authenticate(access_token)
+            return await self._auth_service.authenticate(access_token)
         except AuthHTTPException as error:
             await websocket.close(
                 code=error.payload.application_status_code,

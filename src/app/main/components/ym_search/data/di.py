@@ -7,13 +7,14 @@ from .internal.ym_client import CustomAsyncYMClientI, CustomAsyncYMClientImpl
 from ..domain.repositories import YMSearchRepositoryI
 
 
-class YMSearchDataContainer(DeclarativeContainer):
-    @providers.Resource
-    async def _ym_client(self) -> CustomAsyncYMClientI:
-        client = CustomAsyncYMClientImpl(token=project_settings.YANDEX_MUSIC_TOKEN)
-        await client.init()
-        return client
+@providers.Resource
+async def _ym_client() -> CustomAsyncYMClientI:
+    client = CustomAsyncYMClientImpl(token=project_settings.YANDEX_MUSIC_TOKEN)
+    await client.init()
+    return client
 
+
+class YMSearchDataContainer(DeclarativeContainer):
     ym_search_repository = providers.Singleton[YMSearchRepositoryI](
         YMSearchRepositoryImpl,
         ym_client=_ym_client

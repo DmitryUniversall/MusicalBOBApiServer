@@ -1,8 +1,12 @@
+from typing import TYPE_CHECKING
+
 from dependency_injector import providers
 from dependency_injector.containers import DeclarativeContainer, WiringConfiguration
 
-from src.app.main.components.di import ComponentsContainer
 from .utils_container import UtilsContainer
+
+if TYPE_CHECKING:
+    from src.app.main.components.di import ComponentsContainer
 
 
 class GlobalContainer(DeclarativeContainer):
@@ -10,8 +14,9 @@ class GlobalContainer(DeclarativeContainer):
         modules=["src.app.main.routing"]
     )
 
-    components = providers.Container[ComponentsContainer](ComponentsContainer)
-    utils = providers.Container[UtilsContainer](UtilsContainer)
+    # Lazy dependency is required here to prevent circular imports
+    components: providers.Provider['ComponentsContainer'] = providers.Dependency()
+    utils: providers.Provider['UtilsContainer'] = providers.Dependency()
 
     # Shortcuts
     shortcut_auth_service = components.provided.auth.provided.auth_service

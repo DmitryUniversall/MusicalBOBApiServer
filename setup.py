@@ -5,11 +5,10 @@ from logging.handlers import RotatingFileHandler
 from fastapi import FastAPI
 
 from execution_mode import ExecutionMode
-from src.app.core.db import BaseModel
-#  Init all components
-from src.app.main import *  # type: ignore
-from src.app.main.common.db import AsyncDatabaseManagerST
-from src.app.main.di import GlobalContainer
+from src.app.core import BaseModel
+from src.app.main.common import AsyncDatabaseManagerST
+from src.app.main.components import ComponentsContainer
+from src.app.main.di import GlobalContainer, UtilsContainer
 from src.app.main.exception_handlers import __handlers__
 from src.app.main.routing import project_router
 from src.base.loggers import LoggerBuilder
@@ -52,8 +51,16 @@ def setup_loggers() -> logging.Logger:
 
 
 async def setup_di() -> None:
-    container = GlobalContainer()
-    await container.init_resources()  # type: ignore
+    components_container = ComponentsContainer()
+    await components_container.init_resources()  # type: ignore
+
+    utils_container = UtilsContainer()
+    # await utils_container.init_resources()
+
+    GlobalContainer(  # Create an object just to init container
+        components=components_container,
+        utils=utils_container
+    )
 
 
 async def setup_routes(app: FastAPI) -> None:

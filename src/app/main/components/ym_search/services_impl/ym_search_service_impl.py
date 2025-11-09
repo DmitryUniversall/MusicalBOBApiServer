@@ -7,8 +7,8 @@ from ..domain.repositories import YMSearchRepositoryI
 
 
 class YMSearchServiceImpl(YMSearchServiceI):
-    def __init__(self) -> None:
-        self._ym_search_repository: YMSearchRepositoryI = YMSearchRepositoryI.get_implementation()  # type: ignore
+    def __init__(self, ym_search_repository: YMSearchRepositoryI) -> None:
+        self._ym_search_repository = ym_search_repository
 
     async def get_by_url(self, url: str) -> MediaContent:
         if not url.startswith("https://music.yandex.ru"):

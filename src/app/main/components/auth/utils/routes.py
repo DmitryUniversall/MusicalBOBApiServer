@@ -8,7 +8,6 @@ from src.app.main.components.auth.domain import AuthInfo
 from src.app.main.di import GlobalContainer
 
 
-@inject
 def auth_protected():
     def decorator(func):
         @wraps(func)

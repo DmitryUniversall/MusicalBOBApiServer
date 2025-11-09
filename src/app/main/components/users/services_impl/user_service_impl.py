@@ -5,8 +5,8 @@ from src.app.main.components.users.domain.repositories.user_repositry import Use
 
 
 class UsersServiceImpl(UsersServiceI):
-    def __init__(self) -> None:
-        self._user_repository = UsersRepositoryI.get_implementation()  # type: ignore
+    def __init__(self, user_repository: UsersRepositoryI) -> None:
+        self._user_repository = user_repository
 
     def hash_password(self, password_raw: str, encoding: str = "utf-8") -> str:
         return hashlib.sha256(password_raw.encode(encoding=encoding)).hexdigest()

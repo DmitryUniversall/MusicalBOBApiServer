@@ -12,7 +12,8 @@ from setup import (
     setup_loggers,
     setup_database,
     setup_routes,
-    setup_error_handlers
+    setup_error_handlers,
+    setup_di
 )
 
 
@@ -23,6 +24,9 @@ async def _run_uvicorn():
 
 
 async def _setup(app: fastapi.FastAPI) -> None:
+    _logger.info(f"Initializing DI and resources")
+    await setup_di()
+
     _logger.info(f"Initializing database")
     await setup_database()
 

@@ -7,7 +7,7 @@ from .domain import YMSearchServiceI
 from .services_impl import YMSearchServiceImpl
 
 
-class YMSearchContainer(DeclarativeContainer):
+class YMSearchComponentContainer(DeclarativeContainer):
     # Private
     _data_container = providers.Container[YMSearchDataContainer](YMSearchDataContainer)
 

@@ -11,7 +11,7 @@ class UsersDataContainer(DeclarativeContainer):
     _user_model_adapter = providers.Singleton[UserModelAdapter](UserModelAdapter)
 
     # Public
-    user_repository = providers.Singleton[UsersRepositoryI](
+    users_repository = providers.Singleton[UsersRepositoryI](
         UsersRepositoryImpl,
         user_model_adapter=_user_model_adapter
     )
