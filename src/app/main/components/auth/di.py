@@ -23,6 +23,7 @@ class AuthComponentContainer(DeclarativeContainer):
 
     auth_service = providers.Singleton[AuthServiceI](
         AuthServiceImpl,
+        auth_repository=_data_container.provided.auth_repository,
         session_service=auth_session_service,
         user_service=_users_container.provided.users_service
     )

@@ -4,6 +4,9 @@ from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI
 
+#  Init all components
+from src.app.main import *  # type: ignore
+
 from execution_mode import ExecutionMode
 from src.app.core import BaseModel
 from src.app.main.common import AsyncDatabaseManagerST
@@ -57,10 +60,12 @@ async def setup_di() -> None:
     utils_container = UtilsContainer()
     # await utils_container.init_resources()
 
-    GlobalContainer(  # Create an object just to init container
+    container = GlobalContainer(
         components=components_container,
         utils=utils_container
     )
+
+    container.wire(packages=["src.app.main"])
 
 
 async def setup_routes(app: FastAPI) -> None:

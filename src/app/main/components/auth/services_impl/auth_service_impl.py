@@ -3,19 +3,27 @@ from http import HTTPStatus
 from src.app.main.components.users import UserInternal, UsersServiceI
 from src.base.exceptions import DoesNotExistError
 from src.base.utils.types import UUIDString
-from ..domain.entities import AuthInfo, AuthSessionInternal, AuthTokenPair
-from ..domain.exceptions import SuspiciousActivityHTTPException, WrongAuthCredentialsHTTPException, AuthUserUnknownHTTPException
-from ..domain.services import AuthSessionServiceI
-from ..domain.services.auth_service import AuthServiceI
-from ..internal_utils import generate_jwt_token_id, create_access_token, create_refresh_token
+from ..domain import (
+    AuthInfo,
+    AuthSessionInternal,
+    AuthTokenPair,
+    AuthRepositoryI,
+    AuthServiceI,
+    AuthSessionServiceI,
+    SuspiciousActivityHTTPException,
+    WrongAuthCredentialsHTTPException,
+    AuthUserUnknownHTTPException,
+)
 
 
 class AuthServiceImpl(AuthServiceI):
     def __init__(
             self,
+            auth_repository: AuthRepositoryI,
             session_service: AuthSessionServiceI,
             user_service: UsersServiceI
     ) -> None:
+        self._auth_repository = auth_repository
         self._session_service: AuthSessionServiceI = session_service
         self._user_service: UsersServiceI = user_service
 
@@ -54,15 +62,15 @@ class AuthServiceImpl(AuthServiceI):
             user_agent: str,
             session_name: str
     ) -> tuple[AuthInfo, AuthTokenPair]:
-        access_token_uuid = generate_jwt_token_id()
-        refresh_token_uuid = generate_jwt_token_id()
+        access_token_uuid = self._auth_repository.generate_jwt_token_id()
+        refresh_token_uuid = self._auth_repository.generate_jwt_token_id()
 
         session = await self._session_service.create_session(
             user.id, ip_address, user_agent, session_name, access_token_uuid, refresh_token_uuid
         )
 
-        access_token = create_access_token(user.id, session.session_uuid, token_uuid=access_token_uuid)
-        refresh_token = create_refresh_token(user.id, session.session_uuid, token_uuid=refresh_token_uuid)
+        access_token = self._auth_repository.create_access_token(user.id, session.session_uuid, token_uuid=access_token_uuid)
+        refresh_token = self._auth_repository.create_refresh_token(user.id, session.session_uuid, token_uuid=refresh_token_uuid)
 
         token_pair = AuthTokenPair(
             access_token=access_token,
@@ -89,11 +97,11 @@ class AuthServiceImpl(AuthServiceI):
             await self._handle_suspicious_activity(user, session)
             raise SuspiciousActivityHTTPException(status_code=HTTPStatus.FORBIDDEN)
 
-        new_access_token_uuid = generate_jwt_token_id()
-        new_refresh_token_uuid = generate_jwt_token_id()
+        new_access_token_uuid = self._auth_repository.generate_jwt_token_id()
+        new_refresh_token_uuid = self._auth_repository.generate_jwt_token_id()
 
-        new_access_token = create_access_token(user.id, session.session_uuid, token_uuid=new_access_token_uuid)
-        new_refresh_token = create_refresh_token(user.id, session.session_uuid, token_uuid=new_refresh_token_uuid)
+        new_access_token = self._auth_repository.create_access_token(user.id, session.session_uuid, token_uuid=new_access_token_uuid)
+        new_refresh_token = self._auth_repository.create_refresh_token(user.id, session.session_uuid, token_uuid=new_refresh_token_uuid)
 
         session.access_token_uuid = new_access_token_uuid
         session.refresh_token_uuid = new_refresh_token_uuid

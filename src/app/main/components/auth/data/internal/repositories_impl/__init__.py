@@ -1,1 +1,2 @@
+from .auth_repository import AuthRepositoryImpl
 from .auth_session_repository_impl import AuthSessionRepositoryRedisImpl

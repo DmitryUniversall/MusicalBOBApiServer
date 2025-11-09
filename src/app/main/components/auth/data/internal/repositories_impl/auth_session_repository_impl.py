@@ -4,9 +4,13 @@ from uuid import uuid4
 
 from src.app.main.common.redis import RedisClientMixin
 from src.app.main.common.utils.redis import convert_for_redis
-from src.app.main.components.auth.domain import AuthSessionRepositoryI, AuthSessionInternal
-from src.app.main.components.auth.domain.exceptions import InvalidSessionHTTPException, TokenExpiredHTTPException
-from src.app.main.components.auth.internal_utils import decode_refresh_token_with_http_exceptions, decode_access_token_with_http_exceptions
+from src.app.main.components.auth.domain import (
+    AuthSessionRepositoryI,
+    AuthSessionInternal,
+    AuthRepositoryI,
+    InvalidSessionHTTPException,
+    TokenExpiredHTTPException
+)
 from src.base.state import project_settings
 from src.base.utils.types import UUIDString
 
@@ -16,8 +20,9 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
     AUTH_USER_SESSIONS_REDIS_KEY: str = AUTH_USER_DATA_REDIS_KEY + ":sessions"
     AUTH_USER_SESSION_REDIS_KEY: str = AUTH_USER_SESSIONS_REDIS_KEY + ":{}"
 
-    def __init__(self) -> None:
+    def __init__(self, auth_repository: AuthRepositoryI) -> None:
         super().__init__(db=project_settings.AUTH_REDIS_DB_ID)  # TODO: pass redis via DI
+        self._auth_repository = auth_repository
 
     def _get_session_key(self, user_id: int, session_uuid: UUIDString) -> str:
         return self.AUTH_USER_SESSION_REDIS_KEY.format(user_id, session_uuid)
@@ -40,7 +45,7 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
             return False
 
         if soft:
-            # Soft delete: update the "is_active" field to False
+            # Softly delete: update the "is_active" field to False
             await redis.hset(session_key, "is_active", "false")  # type: ignore
         else:
             await redis.delete(session_key)
@@ -125,7 +130,7 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
         return session
 
     async def get_session_from_access_token(self, access_token: str) -> AuthSessionInternal:
-        payload = decode_access_token_with_http_exceptions(access_token)
+        payload = self._auth_repository.decode_access_token_with_http_exceptions(access_token)
 
         if (session := await self.get_session(payload.user_id, payload.session_uuid)) is None:
             raise InvalidSessionHTTPException(status_code=HTTPStatus.UNAUTHORIZED)
@@ -136,7 +141,7 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
         return session
 
     async def get_session_from_refresh_token(self, refresh_token: str) -> AuthSessionInternal:
-        payload = decode_refresh_token_with_http_exceptions(refresh_token)
+        payload = self._auth_repository.decode_refresh_token_with_http_exceptions(refresh_token)
 
         if (session := await self.get_session(payload.user_id, payload.session_uuid)) is None:
             raise InvalidSessionHTTPException(status_code=HTTPStatus.UNAUTHORIZED)
