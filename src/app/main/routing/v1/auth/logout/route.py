@@ -9,13 +9,12 @@ from ..component_router_v1 import auth_router_v1
 
 
 @auth_router_v1.get("/logout/", response_model=None)
-@auth_protected()
 @route_inject(
     _auth_service=Depends(Provide[GlobalContainer.shortcut_auth_service])
 )
 async def logout_route(
         *,
-        auth_info: AuthInfo,
+        auth_info: AuthInfo = Depends(auth_protected()),
         _auth_service: AuthServiceI
 ) -> ApplicationJsonResponse[None]:
     await _auth_service.revoke_session(auth_info.user.id, auth_info.session.session_uuid)

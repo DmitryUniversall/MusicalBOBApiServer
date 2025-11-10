@@ -15,8 +15,7 @@ from src.app.main.routing.v1.ym_search.component_router_v1 import ym_search_rout
 from .dto import LyricsSearchResult
 
 
-@ym_search_router_v1.get("/lyrics", response_model=None)
-@auth_protected()
+@ym_search_router_v1.get("/lyrics", dependencies=[Depends(auth_protected())], response_model=None)
 @route_inject(
     _ym_search_service=Depends(Provide[GlobalContainer.shortcut_ym_search_service]),
     _translation_service=Depends(Provide[GlobalContainer.shortcut_translation_service])

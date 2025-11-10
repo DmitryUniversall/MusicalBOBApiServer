@@ -54,8 +54,13 @@ def setup_loggers() -> logging.Logger:
 
 
 async def setup_di() -> None:
-    container = GlobalContainer()
-    await container.init_resources()
+
+    components_container = ComponentsContainer()
+    await components_container.init_resources()
+
+    container = GlobalContainer(
+        components=components_container
+    )
 
     container.wire(packages=["src.app.main.routing", "src.app.main.components"])
 

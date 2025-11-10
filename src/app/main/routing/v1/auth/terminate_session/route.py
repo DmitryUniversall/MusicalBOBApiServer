@@ -9,8 +9,7 @@ from src.base.utils.types import UUIDString
 from ..component_router_v1 import auth_router_v1
 
 
-@auth_router_v1.post("/sessions/{session_uuid}/terminate/", response_model=None)
-@auth_protected()
+@auth_router_v1.post("/sessions/{session_uuid}/terminate/", dependencies=[Depends(auth_protected())], response_model=None)
 @route_inject(
     _auth_service=Depends(Provide[GlobalContainer.shortcut_auth_service])
 )
