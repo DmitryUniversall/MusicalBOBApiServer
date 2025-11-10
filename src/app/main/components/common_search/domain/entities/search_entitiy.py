@@ -12,4 +12,4 @@ class BaseSearchEntity(BaseSchema):
     platform: SearchPlatform
     image_source: Optional[str]
 
-    raw: Any = Field(exclude=True)
+    raw: Optional[Any] = Field(default=None, exclude=True)

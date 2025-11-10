@@ -132,6 +132,12 @@
                 "application_status_code": 4003,
                 "message": "Object found for specified query has incorrect type"
             }
+        },
+        "TRANSLATION": {
+            "INVALID_LANGUAGE": {
+                "application_status_code": 5000,
+                "message": "Invalid source or destination language"
+            }
         }
     }
 }

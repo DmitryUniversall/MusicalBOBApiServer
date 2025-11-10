@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Iterable
 
+from pydantic import Field
+
 from .media import Media
 
 if TYPE_CHECKING:
@@ -7,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class Playlist(Media):
-    tracks: list['Track'] = []
+    tracks: list['Track'] = Field(default_factory=list)
 
     def extend(self, tracks: Iterable['Track']) -> None:
         self.tracks.extend(tracks)

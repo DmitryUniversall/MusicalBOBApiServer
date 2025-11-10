@@ -6,13 +6,14 @@ from .domain.services.auth_service import AuthServiceI
 from .domain.services.auth_session_service import AuthSessionServiceI
 from .services_impl.auth_service_impl import AuthServiceImpl
 from .services_impl.auth_session_service_impl import AuthSessionServiceImpl
-from .utils import HTTPJWTBearerAuthDependency
-from ..users import UsersComponentContainer
+from src.app.main.components.users import UsersComponentContainer
 
 
 class AuthComponentContainer(DeclarativeContainer):
+    # Dependencies
+    _users_container: providers.Dependency[UsersComponentContainer] = providers.Dependency()
+
     # Private
-    _users_container = providers.Container[UsersComponentContainer](UsersComponentContainer)
     _data_container = providers.Container[AuthDataContainer](AuthDataContainer)
 
     # Public
@@ -25,10 +26,5 @@ class AuthComponentContainer(DeclarativeContainer):
         AuthServiceImpl,
         auth_repository=_data_container.auth_repository,
         session_service=auth_session_service,
-        users_service=_users_container.users_service
-    )
-
-    jwt_auth_dependency = providers.Singleton[HTTPJWTBearerAuthDependency](
-        HTTPJWTBearerAuthDependency,
-        auth_service=auth_service
+        users_service=_users_container.provided.users_service.call()
     )

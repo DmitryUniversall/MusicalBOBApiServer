@@ -9,6 +9,6 @@ from .ym_search.di import YMSearchComponentContainer
 
 class ComponentsContainer(DeclarativeContainer):
     users = providers.Container[UsersComponentContainer](UsersComponentContainer)
-    auth = providers.Container[AuthComponentContainer](AuthComponentContainer)
+    auth = providers.Container[AuthComponentContainer](AuthComponentContainer, _users_container=users)
     translation = providers.Container[TranslationComponentContainer](TranslationComponentContainer)
     ym_search = providers.Container[YMSearchComponentContainer](YMSearchComponentContainer)

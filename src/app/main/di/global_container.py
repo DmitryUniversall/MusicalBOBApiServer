@@ -6,12 +6,11 @@ from .utils_container import UtilsContainer
 
 
 class GlobalContainer(DeclarativeContainer):
-    # Lazy dependency is required here to prevent circular imports
     components = providers.Container['ComponentsContainer'](ComponentsContainer)
     utils = providers.Container['UtilsContainer'](UtilsContainer)
 
     # Shortcuts
-    shortcut_auth_service = components.auth.auth_service
-    shortcut_jwt_auth_dependency = components.auth.jwt_auth_dependency
-    shortcut_ym_search_service = components.ym_search.ym_search_service
-    shortcut_translation_service = components.translation.translation_service
+    shortcut_auth_service = components.provided.auth.auth_service.call()
+    shortcut_jwt_auth_dependency = components.provided.auth.jwt_auth_dependency.call()
+    shortcut_ym_search_service = components.provided.ym_search.ym_search_service.call()
+    shortcut_translation_service = components.provided.translation.translation_service.call()

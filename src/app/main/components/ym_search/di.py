@@ -12,4 +12,7 @@ class YMSearchComponentContainer(DeclarativeContainer):
     _data_container = providers.Container[YMSearchDataContainer](YMSearchDataContainer)
 
     # Public
-    ym_search_service = providers.Singleton[YMSearchServiceI](YMSearchServiceImpl)
+    ym_search_service = providers.Singleton[YMSearchServiceI](
+        YMSearchServiceImpl,
+        ym_search_repository=_data_container.ym_search_repository
+    )

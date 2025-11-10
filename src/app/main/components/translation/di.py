@@ -12,5 +12,5 @@ class TranslationComponentContainer(DeclarativeContainer):
 
     translation_service = providers.Singleton[TranslationServiceI](
         TranslationServiceImpl,
-        translation_repository=_data_container.provided.translation_repository
+        translation_repository=_data_container.translation_repository
     )

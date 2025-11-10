@@ -174,12 +174,12 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=track.source))
 
     async def search_track_by_name(self, query: str) -> Track:
-        tracks = await self._ym_client.search_track_by_name(query)
+        tracks = await gather_for_each(self._ym_track_to_track, await self._ym_client.search_track_by_name(query))
 
         if not tracks:
             raise SearchFailedNotFoundHttpException()
 
         best_match_track = tracks[0]
-        best_match_track.variations = tracks[1:]
+        best_match_track.variations = list(tracks[1:])
 
         return best_match_track
