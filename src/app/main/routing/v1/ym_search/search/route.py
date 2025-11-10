@@ -1,4 +1,4 @@
-from dependency_injector.wiring import inject, Provide
+from dependency_injector.wiring import Provide
 from fastapi import Depends
 
 from src.app.core.http import route_inject
@@ -13,7 +13,6 @@ from .dto import SearchResultDTO
 
 @ym_search_router_v1.get("/search", response_model=None)
 @auth_protected()
-@inject
 @route_inject(
     _ym_search_service=Depends(Provide[GlobalContainer.shortcut_ym_search_service])
 )

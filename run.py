@@ -8,7 +8,7 @@ import asyncio
 import fastapi
 import uvicorn
 
-from setup import (
+from setup_application import (
     setup_loggers,
     setup_database,
     setup_routes,

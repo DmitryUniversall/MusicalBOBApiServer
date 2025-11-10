@@ -2,6 +2,7 @@ import inspect
 from functools import wraps
 from inspect import Parameter
 
+from dependency_injector.wiring import inject
 from starlette.responses import JSONResponse
 
 from .types import RouteCoro, RouteCoroDecorator  # type: ignore
@@ -37,6 +38,6 @@ def route_inject[T: JSONResponse](**requested):  # FIXME: returns RouteCoroDecor
             return await coro(*args, **kwargs)
 
         wrapper.__signature__ = new_signature  # type: ignore[attr-defined]
-        return wrapper
+        return inject(wrapper)
 
     return decorator

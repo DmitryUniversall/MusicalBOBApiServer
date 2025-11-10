@@ -18,14 +18,14 @@ class AuthComponentContainer(DeclarativeContainer):
     # Public
     auth_session_service = providers.Singleton[AuthSessionServiceI](
         AuthSessionServiceImpl,
-        auth_session_repository=_data_container.provided.auth_session_repository
+        auth_session_repository=_data_container.auth_session_repository
     )
 
     auth_service = providers.Singleton[AuthServiceI](
         AuthServiceImpl,
-        auth_repository=_data_container.provided.auth_repository,
+        auth_repository=_data_container.auth_repository,
         session_service=auth_session_service,
-        user_service=_users_container.provided.users_service
+        users_service=_users_container.users_service
     )
 
     jwt_auth_dependency = providers.Singleton[HTTPJWTBearerAuthDependency](

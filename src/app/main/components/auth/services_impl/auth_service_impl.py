@@ -12,7 +12,7 @@ from ..domain import (
     AuthSessionServiceI,
     SuspiciousActivityHTTPException,
     WrongAuthCredentialsHTTPException,
-    AuthUserUnknownHTTPException,
+    AuthUserUnknownHTTPException
 )
 
 
@@ -21,18 +21,18 @@ class AuthServiceImpl(AuthServiceI):
             self,
             auth_repository: AuthRepositoryI,
             session_service: AuthSessionServiceI,
-            user_service: UsersServiceI
+            users_service: UsersServiceI
     ) -> None:
         self._auth_repository = auth_repository
         self._session_service: AuthSessionServiceI = session_service
-        self._user_service: UsersServiceI = user_service
+        self._users_service: UsersServiceI = users_service
 
     async def _log_security_event(self) -> None:  # TODO
         pass
 
     async def _get_user_by_id(self, user_id: int) -> UserInternal:
         try:
-            return await self._user_service.get_user_by_id(user_id)
+            return await self._users_service.get_user_by_id(user_id)
         except DoesNotExistError as error:
             raise AuthUserUnknownHTTPException() from error
 
@@ -47,11 +47,11 @@ class AuthServiceImpl(AuthServiceI):
         return session.ip_address == current_client_ip and session.user_agent == current_client_user_agent
 
     async def _register_user(self, username: str, password: str, **field) -> UserInternal:
-        return await self._user_service.create_user(username, password, **field)
+        return await self._users_service.create_user(username, password, **field)
 
     async def _login_user(self, username: str, password: str, **fields) -> UserInternal:
         try:
-            return await self._user_service.get_by_auth_credentials(username=username, password_raw=password, **fields)
+            return await self._users_service.get_by_auth_credentials(username=username, password_raw=password, **fields)
         except DoesNotExistError as error:
             raise WrongAuthCredentialsHTTPException() from error
 

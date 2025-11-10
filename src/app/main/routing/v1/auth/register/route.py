@@ -19,7 +19,8 @@ async def register_route(
         *,
         request: Request,
         payload: RegisterRequestDTO,
-        _auth_service: AuthServiceI
+        _auth_service: AuthServiceI = Depends(Provide[GlobalContainer.shortcut_auth_service])
+        # _auth_service: AuthServiceI
 ) -> ApplicationJsonResponse[RegisterResponseDTO]:
     if request.client is None:
         raise ForbiddenHTTPException(message="Client is unknown")

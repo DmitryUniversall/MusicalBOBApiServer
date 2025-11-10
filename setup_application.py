@@ -54,18 +54,10 @@ def setup_loggers() -> logging.Logger:
 
 
 async def setup_di() -> None:
-    components_container = ComponentsContainer()
-    await components_container.init_resources()  # type: ignore
+    container = GlobalContainer()
+    await container.init_resources()
 
-    utils_container = UtilsContainer()
-    # await utils_container.init_resources()
-
-    container = GlobalContainer(
-        components=components_container,
-        utils=utils_container
-    )
-
-    container.wire(packages=["src.app.main"])
+    container.wire(packages=["src.app.main.routing", "src.app.main.components"])
 
 
 async def setup_routes(app: FastAPI) -> None:
