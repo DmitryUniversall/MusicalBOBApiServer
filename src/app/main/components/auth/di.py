@@ -7,14 +7,19 @@ from .domain.services.auth_session_service import AuthSessionServiceI
 from .services_impl.auth_service_impl import AuthServiceImpl
 from .services_impl.auth_session_service_impl import AuthSessionServiceImpl
 from src.app.main.components.users import UsersComponentContainer
+from ...common.redis.redis_client_factory import RedisClientFactory
 
 
 class AuthComponentContainer(DeclarativeContainer):
     # Dependencies
-    _users_container: providers.Dependency[UsersComponentContainer] = providers.Dependency()
+    _users_container = providers.Dependency[UsersComponentContainer]()
+    _redis_client_factory = providers.Dependency[RedisClientFactory]()
 
     # Private
-    _data_container = providers.Container[AuthDataContainer](AuthDataContainer)
+    _data_container = providers.Container[AuthDataContainer](
+        AuthDataContainer,
+        _redis_client_factory=_redis_client_factory.provided
+    )
 
     # Public
     auth_session_service = providers.Singleton[AuthSessionServiceI](

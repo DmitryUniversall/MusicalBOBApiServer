@@ -6,8 +6,12 @@ from .utils_container import UtilsContainer
 
 
 class GlobalContainer(DeclarativeContainer):
-    components = providers.Container['ComponentsContainer'](ComponentsContainer)
-    utils = providers.Container['UtilsContainer'](UtilsContainer)
+    utils = providers.Container[UtilsContainer](UtilsContainer)
+
+    components = providers.Container[ComponentsContainer](
+        ComponentsContainer,
+        _utils_container=utils
+    )
 
     # Shortcuts
     shortcut_auth_service = components.provided.auth.auth_service.call()

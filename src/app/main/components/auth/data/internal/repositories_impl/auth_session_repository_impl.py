@@ -2,7 +2,6 @@ from datetime import datetime
 from http import HTTPStatus
 from uuid import uuid4
 
-from src.app.main.common.redis import RedisClientMixin
 from src.app.main.common.utils.redis import convert_for_redis
 from src.app.main.components.auth.domain import (
     AuthSessionRepositoryI,
@@ -13,15 +12,16 @@ from src.app.main.components.auth.domain import (
 )
 from src.base.state import project_settings
 from src.base.utils.types import UUIDString
+from redis import asyncio as aioredis
 
 
-class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
+class AuthSessionRepositoryRedisImpl(AuthSessionRepositoryI):
     AUTH_USER_DATA_REDIS_KEY: str = project_settings.AUTH_REDIS_KEY + ":user:{}"
     AUTH_USER_SESSIONS_REDIS_KEY: str = AUTH_USER_DATA_REDIS_KEY + ":sessions"
     AUTH_USER_SESSION_REDIS_KEY: str = AUTH_USER_SESSIONS_REDIS_KEY + ":{}"
 
-    def __init__(self, auth_repository: AuthRepositoryI) -> None:
-        super().__init__(db=project_settings.AUTH_REDIS_DB_ID)  # TODO: pass redis via DI
+    def __init__(self, auth_repository: AuthRepositoryI, redis_client: aioredis.client.Redis) -> None:
+        self._redis_client = redis_client
         self._auth_repository = auth_repository
 
     def _get_session_key(self, user_id: int, session_uuid: UUIDString) -> str:
@@ -31,41 +31,35 @@ class AuthSessionRepositoryRedisImpl(RedisClientMixin, AuthSessionRepositoryI):
         return self.AUTH_USER_SESSIONS_REDIS_KEY.format(user_id)
 
     async def __save_session(self, session: AuthSessionInternal) -> None:
-        redis = await self.get_redis()
-
         session_key = self._get_session_key(session.user_id, session.session_uuid)
-        await redis.hset(session_key, mapping=convert_for_redis(session.to_json_dict()))  # type: ignore
-        await redis.expire(session_key, round(session.expires_at.timestamp()))  # type: ignore
+        await self._redis_client.hset(session_key, mapping=convert_for_redis(session.to_json_dict()))  # type: ignore
+        await self._redis_client.expire(session_key, round(session.expires_at.timestamp()))  # type: ignore
 
     async def __delete_session(self, user_id: int, session_uuid: UUIDString, *, soft: bool) -> bool:
-        redis = await self.get_redis()
         session_key = self._get_session_key(user_id, session_uuid)
 
-        if not await redis.exists(session_key):
+        if not await self._redis_client.exists(session_key):
             return False
 
         if soft:
             # Softly delete: update the "is_active" field to False
-            await redis.hset(session_key, "is_active", "false")  # type: ignore
+            await self._redis_client.hset(session_key, "is_active", "false")  # type: ignore
         else:
-            await redis.delete(session_key)
+            await self._redis_client.delete(session_key)
 
         return True
 
     async def __get_session(self, user_id: int, session_uuid: UUIDString) -> AuthSessionInternal | None:
-        redis = await self.get_redis()
         session_key = self._get_session_key(user_id, session_uuid)
 
-        if (session_data := await redis.hgetall(session_key)) is None or len(session_data) == 0:  # type: ignore
+        if (session_data := await self._redis_client.hgetall(session_key)) is None or len(session_data) == 0:  # type: ignore
             return None
 
         return AuthSessionInternal.model_validate(session_data)
 
     async def __scan_for_user_sessions(self, user_id: int) -> tuple[AuthSessionInternal, ...]:
-        redis = await self.get_redis()
-
-        session_uuids = tuple(key async for key in redis.scan_iter(match=self._get_user_sessions_key(user_id)))  # type: ignore
-        sessions = await asyncio.gather(*(redis.hgetall(key) for key in session_uuids))  # type: ignore
+        session_uuids = tuple(key async for key in self._redis_client.scan_iter(match=self._get_user_sessions_key(user_id)))  # type: ignore
+        sessions = await asyncio.gather(*(self._redis_client.hgetall(key) for key in session_uuids))  # type: ignore
 
         return tuple(map(AuthSessionInternal.model_validate, sessions))
 
