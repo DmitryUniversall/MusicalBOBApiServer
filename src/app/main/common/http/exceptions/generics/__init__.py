@@ -4,5 +4,6 @@ from .generics import (
     NotFoundHTTPException,
     BadRequestHTTPException,
     ForbiddenHTTPException,
-    SchemaValidationHTTPException
+    SchemaValidationHTTPException,
+    InternalServerErrorHTTPException
 )

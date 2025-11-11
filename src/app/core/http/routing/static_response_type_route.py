@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Coroutine, Any, Callable
+from typing import Callable, Coroutine, Any
 
-from fastapi.requests import Request
 from fastapi.responses import Response
-from fastapi.routing import APIRoute
+from starlette.requests import Request
+
+from .response_type_validator_route import ResponseTypeValidatorApiRoute
 
 
-class AbstractStaticResponseTypeApiRoute[_responseT: Response](APIRoute, ABC):
+class AbstractStaticResponseTypeApiRoute[_responseT: Response](ResponseTypeValidatorApiRoute, ABC):
     """
     An abstract base class for FastAPI routes that enforce a specific response type.
     """
@@ -21,24 +22,18 @@ class AbstractStaticResponseTypeApiRoute[_responseT: Response](APIRoute, ABC):
             The type of the response expected from the route handler
         """
 
+    def __allowed_response_types__(self) -> tuple[type[_responseT]]:
+        return (self.__response_type__,)
+
     def get_route_handler(self) -> Callable[[Request], Coroutine[Any, Any, Response]]:
         """
-        Overrides the FastAPI `get_route_handler` method to ensure the response is of the expected type.
+        Overrides `get_route_handler` method to ensure the response is of the expected type (only 1 allowed)
 
         :return: `Callable[[Request], Coroutine[Any, Any, Response]]`
-            A callable that handles the route and ensures the response is of the expected type.
+            A callable that handles the route and ensures the response is of the expected type (only 1 allowed)
         """
 
-        original_handler = super().get_route_handler()
+        if len(self.__allowed_response_types__()) != 1:
+            raise TypeError("AbstractStaticResponseTypeApiRoute must have exactly one allowed response type")
 
-        async def custom_handler(request: Request) -> Response:
-            response = await original_handler(request)
-
-            if not isinstance(response, self.__response_type__):
-                raise TypeError(
-                    f"[{self.__class__.__name__}]: Unexpected response type: must be {self.__response_type__.__name__}"
-                )
-
-            return response
-
-        return custom_handler
+        return super().get_route_handler()

@@ -1,1 +1,2 @@
+from .response_type_validator_route import ResponseTypeValidatorApiRoute
 from .static_response_type_route import AbstractStaticResponseTypeApiRoute

@@ -83,3 +83,15 @@ class SchemaValidationHTTPException(UnprocessableEntityHTTPException):
             }
 
         return payload
+
+
+class InternalServerErrorHTTPException(GenericApplicationHTTPException):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs, status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    def get_default_response_payload(self, **payload_kwargs) -> ApplicationResponseDTO:
+        return ApplicationResponseDTO(**{
+            "ok": False,
+            **project_settings.APPLICATION_STATUS_CODES.GENERIC_ERRORS.INTERNAL_SERVER_ERROR,
+            **payload_kwargs
+        })
