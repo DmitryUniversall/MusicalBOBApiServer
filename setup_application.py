@@ -4,14 +4,12 @@ from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI
 
-#  Init all components
-from src.app.main import *  # type: ignore
-
 from execution_mode import ExecutionMode
 from src.app.core import BaseModel
+#  Init all components
+from src.app.main import *  # type: ignore
 from src.app.main.common import AsyncDatabaseManagerST
-from src.app.main.components import ComponentsContainer
-from src.app.main.di import GlobalContainer, UtilsContainer
+from src.app.main.di import GlobalContainer
 from src.app.main.exception_handlers import __handlers__
 from src.app.main.routing import project_router
 from src.base.loggers import LoggerBuilder

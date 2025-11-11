@@ -34,10 +34,7 @@ async def ym_search_lyrics_route(
 
     lyrics: Lyrics = await _ym_search_service.get_lyrics_for_track(media)
     if translate_to is not None:
-        lyrics.translations = {
-            language_code: await _translation_service.translate(lyrics.lyrics, language_code)
-            for language_code in translate_to.split(";")
-        }
+        lyrics.translations = await _translation_service.translate_many_to_text(lyrics.lyrics, translate_to.split(";"))
 
     return SuccessResponse[LyricsSearchResult](
         data=LyricsSearchResult(lyrics=lyrics)
