@@ -36,7 +36,7 @@ class ResponseTypeValidatorApiRoute(APIRoute, ABC):
 
             if not isinstance(response, self.__allowed_response_types__):
                 raise TypeError(
-                    f"[{self.__class__.__name__}]: Unexpected response type: must be {self.__allowed_response_types__.__name__}"
+                    f"[{self.__class__.__name__}]: Unexpected response type: must be one instance of {self.__allowed_response_types__}"
                 )
 
             return response

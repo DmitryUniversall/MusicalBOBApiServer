@@ -22,6 +22,7 @@ class AbstractStaticResponseTypeApiRoute[_responseT: Response](ResponseTypeValid
             The type of the response expected from the route handler
         """
 
+    @property
     def __allowed_response_types__(self) -> tuple[type[_responseT]]:
         return (self.__response_type__,)
 
@@ -33,7 +34,7 @@ class AbstractStaticResponseTypeApiRoute[_responseT: Response](ResponseTypeValid
             A callable that handles the route and ensures the response is of the expected type (only 1 allowed)
         """
 
-        if len(self.__allowed_response_types__()) != 1:
+        if len(self.__allowed_response_types__) != 1:
             raise TypeError("AbstractStaticResponseTypeApiRoute must have exactly one allowed response type")
 
         return super().get_route_handler()

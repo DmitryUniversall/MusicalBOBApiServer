@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from dependency_injector import providers
 from dependency_injector.containers import DeclarativeContainer
 
@@ -6,10 +8,13 @@ from .translation.di import TranslationComponentContainer
 from .users.di import UsersComponentContainer
 from .ym_search.di import YMSearchComponentContainer
 
+if TYPE_CHECKING:
+    from src.app.main.di import UtilsContainer
+
 
 class ComponentsContainer(DeclarativeContainer):
     # Dependencies
-    _utils_container = providers.Dependency()
+    _utils_container: providers.Dependency['UtilsContainer'] = providers.Dependency()
 
     # Public
     users = providers.Container[UsersComponentContainer](UsersComponentContainer)
