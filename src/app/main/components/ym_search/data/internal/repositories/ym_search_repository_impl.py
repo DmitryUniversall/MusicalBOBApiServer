@@ -3,25 +3,31 @@ from typing import Optional, Iterable
 
 import yandex_music
 
-from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, AudioSource, Lyrics
+from src.app.main.components.audio_sources import AudioSourceServiceI, AudioSource
+from src.app.main.components.common_search import Author, SearchPlatform, Playlist, Track, Lyrics
 from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
+from src.app.main.components.search_cache import SearchCacheServiceI
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
-from src.base.utils.cache import CacheContainer
 from src.base.state import project_settings
 from src.base.utils.async_tools import gather_for_each
-from src.base.utils.syntax import ValueWrapper
+from src.base.utils.cache import CacheContainer
 from ..ym_client import CustomAsyncYMClientI
 
 _logger = logging.getLogger(__name__)
 
 
 class YMSearchRepositoryImpl(YMSearchRepositoryI):
-    def __init__(self, ym_client: CustomAsyncYMClientI) -> None:
-        self._ym_client = ym_client
+    def __init__(
+            self,
+            _ym_client: CustomAsyncYMClientI,
+            _audio_source_service: AudioSourceServiceI,
+            _search_cache_service: SearchCacheServiceI,
+    ) -> None:
+        self._ym_client = _ym_client
+        self._audio_source_service = _audio_source_service
+        self._search_cache_service = _search_cache_service
 
-        self._track_cache: CacheContainer[str, Track] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)
-        self._lyrics_cache: CacheContainer[str, Lyrics] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)
-        self._audio_source_cache: CacheContainer[str, tuple[AudioSource, ...]] = CacheContainer(default_ttl=project_settings.YM_AUDIO_SOURCE_CACHE_EXPIRE)
+        self._lyrics_cache: CacheContainer[str, Lyrics] = CacheContainer(default_ttl=project_settings.YM_CACHE_EXPIRE)  # TODO: Use search cache service
 
     async def _ym_artist_to_author(self, artist: yandex_music.Artist, **kwargs) -> 'Author':
         data = {
@@ -106,72 +112,124 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
 
         return Track(**data)
 
-    async def _get_track_by_url(self, url: str) -> Track:
+    async def _fetch_track_by_url(self, url: str) -> Track:
         track = await self._ym_client.get_track_by_url(url=url)
         return await self._ym_track_to_track(track=track, source=url)
 
+    async def _get_cached_track_by_url(self, url: str) -> Optional[Track]:
+        return await self._search_cache_service.get_cached_track_by_source(source=url)
+
     async def get_track_by_url(self, url: str) -> Track:
-        if (cached := self._track_cache.get(url, None)) is not None:
+        if (cached_track := await self._get_cached_track_by_url(url)) is not None:
             _logger.debug(f"Found cached track for url: {url}")
-            return cached
+            return cached_track
 
-        result = await self._get_track_by_url(url)
-        self._track_cache.set(url, result)
+        fetched_track = await self._fetch_track_by_url(url)
+        await self._search_cache_service.cache_search_entity(fetched_track)
 
-        return result
+        return fetched_track
 
-    async def get_playlist_by_url(self, url: str) -> Playlist:
+    async def _fetch_playlist_by_url(self, url: str) -> Playlist:
         playlist, tracks = await self._ym_client.get_playlist_with_tracks_by_url(url=url)
         return await self._ym_playlist_to_playlist(playlist=playlist, tracks=tracks, source=url)
 
-    async def get_album_by_url(self, url: str) -> Playlist:
+    async def _get_cached_playlist_by_url(self, _: str) -> Optional[Playlist]:  # TODO: Get playlist meta from cache and load only tracks
+        return None  # We don't cache playlists because its content can be changed
+
+    async def get_playlist_by_url(self, url: str) -> Playlist:
+        if (cached_playlist := await self._get_cached_playlist_by_url(url)) is not None:
+            _logger.debug(f"Found cached playlist for url: {url}")
+            return cached_playlist
+
+        fetched_playlist = await self._fetch_playlist_by_url(url)
+        # await self._search_cache_service.cache_search_entity(fetched_playlist)  # We don't cache playlists because its content can be changed
+
+        return fetched_playlist
+
+    async def _fetch_album_by_url(self, url: str) -> Playlist:
         album, tracks = await self._ym_client.get_album_with_tracks_by_url(url=url)
         return await self._ym_album_to_playlist(album=album, tracks=tracks, source=url)
 
-    async def _get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
+    async def _get_cached_album_by_url(self, url: str) -> Optional[Playlist]:  # Caching album is not fully safe, but I'll do it anyway
+        return await self._search_cache_service.get_cached_playlist_by_source(source=url)
+
+    async def get_album_by_url(self, url: str) -> Playlist:
+        if (cached_album := await self._get_cached_album_by_url(url)) is not None:
+            _logger.debug(f"Found cached album for url: {url}")
+            return cached_album
+
+        fetched_album = await self._fetch_album_by_url(url)
+        await self._search_cache_service.cache_search_entity(fetched_album)  # Caching album is not fully safe, but I'll do it anyway
+
+        return fetched_album
+
+    async def _fetch_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         return tuple(map(
             lambda it: AudioSource(source=it),
             await self._ym_client.get_audio_sources_by_url(url=url)
         ))
 
+    async def _get_cached_audio_sources_by_track_uuid(self, track_uuid: str) -> tuple[AudioSource, ...]:  # Caching album is not fully safe, but I'll do it anyway
+        return await self._audio_source_service.get_cached_audio_sources_for_track(track_uuid)
+
     async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
-        if (cached := self._audio_source_cache.get(url, None)) is not None:
-            _logger.debug(f"Found cached audio source for url: {url}")
-            return cached
+        fetched_audio_sources = await self._fetch_audio_sources_by_url(url)
+        await self._audio_source_service.cache_audio_sources(fetched_audio_sources)
 
-        return (
-            ValueWrapper(await self._get_audio_sources_by_url(url))
-            .also_if(lambda it: self._audio_source_cache.set(url, it), check=lambda it: len(it) > 0)
-            .value
-        )
+        return fetched_audio_sources
 
-    async def _get_lyrics_by_url(self, url: str) -> Lyrics:
-        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=url))
-
-    async def get_lyrics_by_url(self, url: str) -> Lyrics:
-        if (cached := self._lyrics_cache.get(url, None)) is not None:
-            _logger.debug(f"Found cached lyrics for url: {url}")
-            return cached
-
-        return (
-            ValueWrapper(await self._get_lyrics_by_url(url))
-            .also(lambda it: self._lyrics_cache.set(url, it))
-            .value
-        )
+    async def _get_audio_sources_for_raw_track(self, raw: yandex_music.Track) -> tuple[AudioSource, ...]:
+        return tuple(map(
+            lambda it: AudioSource(source=it),
+            await self._ym_client.get_audio_sources_by_raw(raw=raw)
+        ))
 
     async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
-        if track.raw is not None and isinstance(track.raw, yandex_music.Track):
-            return tuple(map(
-                lambda it: AudioSource(source=it),
-                await self._ym_client.get_audio_sources_by_raw(raw=track.raw)
-            ))
+        if cached_audio_sources := await self._get_cached_audio_sources_by_track_uuid(track.uuid):
+            _logger.debug(f"Found cached audio sources for track: {track.source}")
+            return cached_audio_sources
 
-        return await self.get_audio_sources_by_url(url=track.source)
+        if track.raw is not None and isinstance(track.raw, yandex_music.Track):
+            sources = await self._get_audio_sources_for_raw_track(raw=track.raw)
+        else:
+            sources = await self._fetch_audio_sources_by_url(url=track.source)  # Using _fetch_audio_sources_by_url to avoid another cache check
+
+        await self._audio_source_service.cache_audio_sources_for_track(track.uuid, sources)
+
+        return sources
+
+    async def _fetch_lyrics_by_url(self, url: str) -> Lyrics:
+        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=url))
+
+    async def _get_cached_lyrics_by_url(self, url: str) -> Optional[Lyrics]:
+        return self._lyrics_cache.get(url, None)
+
+    async def get_lyrics_by_url(self, url: str) -> Lyrics:
+        if (cached_lyrics := await self._get_cached_lyrics_by_url(url)) is not None:
+            _logger.debug(f"Found cached lyrics for url: {url}")
+            return cached_lyrics
+
+        fetched_lyrics = await self._fetch_lyrics_by_url(url)
+        self._lyrics_cache.set(url, fetched_lyrics)
+
+        return fetched_lyrics
+
+    async def _get_lyrics_for_raw_track(self, raw: yandex_music.Track) -> Lyrics:
+        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_raw(raw=raw))
 
     async def get_lyrics_for_track(self, track: Track) -> Lyrics:
+        if (cached_lyrics := await self._get_cached_lyrics_by_url(url=track.source)) is not None:
+            _logger.debug(f"Found cached lyrics for track: {track.source}")
+            return cached_lyrics
+
         if track.raw is not None and isinstance(track.raw, yandex_music.Track):
-            return Lyrics(lyrics=await self._ym_client.get_lyrics_by_raw(raw=track.raw))
-        return Lyrics(lyrics=await self._ym_client.get_lyrics_by_url(url=track.source))
+            fetched_lyrics = await self._get_lyrics_for_raw_track(track.raw)
+        else:
+            fetched_lyrics = await self._fetch_lyrics_by_url(url=track.source)  # Using _fetch_lyrics_by_url to avoid another cache check
+
+        self._lyrics_cache.set(track.source, fetched_lyrics)
+
+        return fetched_lyrics
 
     async def search_track_by_name(self, query: str) -> Track:
         tracks = await gather_for_each(self._ym_track_to_track, await self._ym_client.search_track_by_name(query))

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from src.app.main.components.common_search import Playlist, Track, AudioSource, Lyrics
+from src.app.main.components.audio_sources import AudioSource
+from src.app.main.components.common_search import Playlist, Track, Lyrics
 
 
 class YMSearchRepositoryI(ABC):

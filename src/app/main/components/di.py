@@ -3,7 +3,9 @@ from typing import TYPE_CHECKING
 from dependency_injector import providers
 from dependency_injector.containers import DeclarativeContainer
 
+from .audio_sources.di import AudioSourceComponentContainer
 from .auth.di import AuthComponentContainer
+from .search_cache import SearchCacheComponentContainer
 from .translation.di import TranslationComponentContainer
 from .users.di import UsersComponentContainer
 from .ym_search.di import YMSearchComponentContainer
@@ -27,4 +29,18 @@ class ComponentsContainer(DeclarativeContainer):
 
     translation = providers.Container[TranslationComponentContainer](TranslationComponentContainer)
 
-    ym_search = providers.Container[YMSearchComponentContainer](YMSearchComponentContainer)
+    audio_sources = providers.Container[AudioSourceComponentContainer](
+        AudioSourceComponentContainer,
+        _redis_client_factory=_utils_container.provided.redis_client_factory
+    )
+
+    search_cache = providers.Container[SearchCacheComponentContainer](
+        SearchCacheComponentContainer,
+        _redis_client_factory=_utils_container.provided.redis_client_factory
+    )
+
+    ym_search = providers.Container[YMSearchComponentContainer](
+        YMSearchComponentContainer,
+        _audio_source_service=audio_sources.audio_source_service,
+        _search_cache_service=search_cache.search_cache_service
+    )

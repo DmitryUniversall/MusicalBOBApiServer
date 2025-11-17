@@ -1,7 +1,7 @@
 from abc import ABC
 
-from src.app.main.components.common_search.domain.services import AbstractPlatformSearchService
+from src.app.main.components.common_search import BasePlatformSearchService
 
 
-class YMSearchServiceI(AbstractPlatformSearchService, ABC):
+class YMSearchServiceI(BasePlatformSearchService, ABC):
     pass

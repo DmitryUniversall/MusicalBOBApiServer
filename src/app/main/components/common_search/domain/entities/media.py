@@ -1,6 +1,6 @@
 from .author import Author
-from .search_entitiy import BaseSearchEntity
+from .search_entitiy import SearchEntity
 
 
-class Media(BaseSearchEntity):
+class Media(SearchEntity):
     authors: list[Author] = []

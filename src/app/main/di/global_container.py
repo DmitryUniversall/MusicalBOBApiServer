@@ -18,3 +18,4 @@ class GlobalContainer(DeclarativeContainer):
     shortcut_jwt_auth_dependency = components.provided.auth.jwt_auth_dependency.call()
     shortcut_ym_search_service = components.provided.ym_search.ym_search_service.call()
     shortcut_translation_service = components.provided.translation.translation_service.call()
+    shortcut_audio_source_service = components.provided.audio_sources.audio_source_service.call()

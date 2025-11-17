@@ -1,14 +1,23 @@
 import re
 
-from src.app.main.components.common_search import AudioSource, MediaContent, Track, Lyrics
-from src.app.main.components.common_search.domain.exceptions import BadUrlFormatHttpException, SearchFailedNotFoundHttpException
+from src.app.main.components.audio_sources import AudioSource
+from src.app.main.components.common_search import (
+    MediaContent,
+    Track,
+    Lyrics,
+    BadUrlFormatHttpException,
+    SearchFailedNotFoundHttpException
+)
 from ..domain import YMSearchServiceI
 from ..domain.repositories import YMSearchRepositoryI
 
 
 class YMSearchServiceImpl(YMSearchServiceI):
-    def __init__(self, ym_search_repository: YMSearchRepositoryI) -> None:
-        self._ym_search_repository = ym_search_repository
+    def __init__(
+            self,
+            _ym_search_repository: YMSearchRepositoryI
+    ) -> None:
+        self._ym_search_repository = _ym_search_repository
 
     async def get_by_url(self, url: str) -> MediaContent:
         if not url.startswith("https://music.yandex.ru"):
@@ -34,11 +43,11 @@ class YMSearchServiceImpl(YMSearchServiceI):
     async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         return await self._ym_search_repository.get_audio_sources_by_url(url)
 
-    async def get_lyrics_by_url(self, url: str) -> Lyrics:
-        return await self._ym_search_repository.get_lyrics_by_url(url=url)
-
     async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
         return await self._ym_search_repository.get_audio_sources_for_track(track=track)
+
+    async def get_lyrics_by_url(self, url: str) -> Lyrics:
+        return await self._ym_search_repository.get_lyrics_by_url(url=url)
 
     async def get_lyrics_for_track(self, track: Track) -> Lyrics:
         return await self._ym_search_repository.get_lyrics_for_track(track=track)

@@ -1,5 +1,5 @@
-from .search_entitiy import BaseSearchEntity
+from .search_entitiy import SearchEntity
 
 
-class Author(BaseSearchEntity):
+class Author(SearchEntity):
     pass
