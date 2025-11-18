@@ -1,5 +1,6 @@
 from .base import GenericApplicationHTTPException
 from .generics import (
+    RouteSpecificHTTPException,
     AlreadyExistsHTTPException,
     NotFoundHTTPException,
     BadRequestHTTPException,

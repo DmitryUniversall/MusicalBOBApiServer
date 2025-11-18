@@ -138,6 +138,14 @@
                 "application_status_code": 5000,
                 "message": "Invalid source or destination language"
             }
+        },
+        "ROUTE_SPECIFIC": {
+            "STREAM_AUDIO_SOURCE_ROUTE": {
+                "INVALID_AUDIO_SOURCE": {
+                    "application_status_code": 6000,
+                    "message": "Invalid or expired audio source specified. Server allows to stream only pre-saved audio sources. You can get valid audio source by using /audio_sources/ endpoint"
+                }
+            }
         }
     }
 }

@@ -1,10 +1,17 @@
+from abc import ABC
 from http import HTTPStatus
 
 from pydantic import ValidationError
 
 from src.app.main.common.dto import ApplicationResponseDTO
 from src.base.state import project_settings
+from src.base.utils.collections import DotDict
 from .base import GenericApplicationHTTPException
+
+
+class RouteSpecificHTTPException(GenericApplicationHTTPException, ABC):
+    def get_base_status_info(self) -> DotDict:
+        return project_settings.APPLICATION_STATUS_CODES.ROUTE_SPECIFIC
 
 
 class ForbiddenHTTPException(GenericApplicationHTTPException):
