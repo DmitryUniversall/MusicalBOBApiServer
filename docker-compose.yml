@@ -8,3 +8,5 @@ services:
             - ./logs/:/usr/src/app/logs/
         command: python3 run.py --mode production
         restart: unless-stopped
+        expose:
+            -   "8591:8591"
