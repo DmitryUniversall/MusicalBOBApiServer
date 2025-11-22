@@ -78,5 +78,4 @@ async def setup_database_models(db_manager: 'AsyncDatabaseManagerST') -> None:
     async with db_manager.engine.begin() as conn:
         # if project_settings.MODE != ExecutionMode.PRODUCTION:
         #     await conn.run_sync(BaseModel.metadata.drop_all)
-
         await conn.run_sync(BaseModel.metadata.create_all)
