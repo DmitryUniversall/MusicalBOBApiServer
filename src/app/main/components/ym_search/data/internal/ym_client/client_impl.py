@@ -1,7 +1,7 @@
 import re
 from itertools import chain
 from logging import getLogger
-from typing import Iterable
+from typing import Iterable, Optional
 
 import yandex_music
 from yandex_music.exceptions import (
@@ -12,12 +12,17 @@ from yandex_music.exceptions import (
 from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException, BadUrlFormatHttpException
 from src.app.main.components.common_search.domain.exceptions.generics import ContentUnavailableHttpException
 from src.app.main.components.ym_search.data.internal.ym_client.abc import CustomAsyncYMClientI
+from src.base.state import project_settings
 from src.base.utils.async_tools import gather_all
+from src.base.utils.regex import UUID_REGEX
 
 _logger = getLogger(__name__)
 
 
 class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
+    def __init__(self, *, base_url: Optional[str] = None, **kwargs) -> None:
+        super().__init__(**kwargs, base_url=base_url or project_settings.YANDEX_MUSIC_API_BASE_URL)
+
     async def search_track_by_name(self: yandex_music.ClientAsync, query: str) -> tuple[yandex_music.Track, ...]:
         result = await self.search(text=query, type_='track')
 
@@ -47,16 +52,16 @@ class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
             track_id=track_id
         )
 
+    async def _get_playlist_with_tracks_by_uuid(self, uuid: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
+        raise NotImplementedError()
+
     async def get_playlist_with_tracks_by_url(self, url: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
-        if (match := re.search(r"users/(\S+?)/playlists/(\d+)", url)) is None:
-            raise BadUrlFormatHttpException(message=f"Cannot fetch playlist from yandex music by url '{url}': invalid url")
+        if (match := re.search(f"playlists/({UUID_REGEX})", url)) is not None:
+            return await self._get_playlist_with_tracks_by_uuid(match.group(1))
+        elif (match := re.search(r"users/(\S+?)/playlists/(\d+)", url)) is not None:
+            return await self.get_playlist(username=match.group(1), playlist_id=int(match.group(2)))
 
-        username, playlist_id = match.group(1), int(match.group(2))
-
-        return await self.get_playlist(
-            username=username,
-            playlist_id=playlist_id
-        )
+        raise BadUrlFormatHttpException(message=f"Cannot fetch playlist from yandex music by url '{url}': invalid url")
 
     async def get_audio_sources_by_url(self, url: str) -> tuple[str, ...]:
         track = await self.get_track_by_url(url)

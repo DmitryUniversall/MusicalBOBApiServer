@@ -11,3 +11,6 @@ class Track(Media):
     playlist: Optional[Playlist] = None
 
     variations: list['Track'] = []
+
+
+Playlist.model_rebuild()

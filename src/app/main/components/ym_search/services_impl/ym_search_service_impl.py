@@ -8,6 +8,7 @@ from src.app.main.components.common_search import (
     BadUrlFormatHttpException,
     SearchFailedNotFoundHttpException
 )
+from src.base.utils.regex import UUID_REGEX
 from ..domain import YMSearchServiceI
 from ..domain.repositories import YMSearchRepositoryI
 
@@ -28,6 +29,8 @@ class YMSearchServiceImpl(YMSearchServiceI):
         elif re.search(r"album/\d+", url):
             return await self._ym_search_repository.get_album_by_url(url=url)
         elif re.search(r"users/(\S+?)/playlists/(\d+)", url):
+            return await self._ym_search_repository.get_playlist_by_url(url=url)
+        elif re.search(f"/playlists/{UUID_REGEX}", url):
             return await self._ym_search_repository.get_playlist_by_url(url=url)
 
         raise BadUrlFormatHttpException(message=f"Cannot fetch media from yandex music: invalid url")

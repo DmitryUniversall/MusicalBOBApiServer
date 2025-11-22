@@ -59,6 +59,10 @@
             "ROUTE_DOES_NOT_EXISTS": {
                 "application_status_code": 2008,
                 "message": "Route does not exists"
+            },
+            "NOT_IMPLEMENTED": {
+                "application_status_code": 2009,
+                "message": "Not implemented yet"
             }
         },
         "AUTH": {

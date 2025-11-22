@@ -64,3 +64,4 @@ AUDIO_SOURCE_CACHE_MAX_SIZE = 1000
 SEARCH_CACHE_REDIS_KEY = "cache:search:entities"
 SEARCH_CACHE_MAX_SIZE = 5000
 AUDIO_SOURCE_DEFAULT_TTL = 240
+YANDEX_MUSIC_API_BASE_URL = "https://api.music.yandex.net"  # Or https://api.music.yandex.ru
