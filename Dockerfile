@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.12-slim
 
 WORKDIR /usr/src/app
 
@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Ports
-EXPOSE 8000:8000/tcp
+EXPOSE 8000
 
 # Install requirements
 RUN apt update
