@@ -1,7 +1,7 @@
 import asyncio
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from typing import Coroutine, Callable, Any, Iterable
+from typing import Coroutine, Callable, Any, Iterable, Optional
 
 type CoroOrFuture[_T] = Coroutine[Any, Any, _T] | asyncio.Future[_T]
 
@@ -174,3 +174,33 @@ class NamedAsyncLock:
 
     def __call__(self, name: str):
         return self.lock(name)
+
+
+class TempTaskHandler:
+    def __init__(self, task: asyncio.Task):
+        self.task = task
+
+    async def __aenter__(self):
+        return self.task
+
+    async def __aexit__(self, exc_type, exc, tb):
+        if not self.task.done():
+            self.task.cancel()
+
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                pass
+
+
+class TempTask:
+    def __init__(self, coro):
+        self._coro = coro
+        self._task_handler: Optional[TempTaskHandler] = None
+
+    async def __aenter__(self):
+        self._task_handler = TempTaskHandler(asyncio.create_task(self._coro))
+        return await self._task_handler.__aenter__()
+
+    async def __aexit__(self, exc_type, exc, tb):
+        return await self._task_handler.__aexit__(exc_type, exc, tb)

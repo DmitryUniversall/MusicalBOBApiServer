@@ -144,6 +144,10 @@
                 "INVALID_AUDIO_SOURCE": {
                     "application_status_code": 6000,
                     "message": "Invalid or expired audio source specified. Server allows to stream only pre-saved audio sources. You can get valid audio source by using /audio_sources/ endpoint"
+                },
+                "FAILED_TO_READ_ORIGINAL_AUDIO_SOURCE": {
+                    "application_status_code": 6001,
+                    "message": "Failed to stream audio source '%s'. Got unexpected status code: %d"
                 }
             }
         }

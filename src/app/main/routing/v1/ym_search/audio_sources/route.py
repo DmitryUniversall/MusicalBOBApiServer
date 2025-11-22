@@ -13,7 +13,7 @@ from src.app.main.routing.v1.ym_search.component_router_v1 import ym_search_rout
 from .dto import AudioSourceSearchResult
 
 
-@ym_search_router_v1.get("/audio_sources", dependencies=[Depends(auth_protected)], response_model=None)
+@ym_search_router_v1.get("/audio-sources", dependencies=[Depends(auth_protected)], response_model=None)
 @route_inject(
     _ym_search_service=Depends(Provide[GlobalContainer.shortcut_ym_search_service]),
     _audio_source_service=Depends(Provide[GlobalContainer.shortcut_audio_source_service])
