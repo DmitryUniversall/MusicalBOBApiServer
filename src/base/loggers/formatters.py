@@ -10,7 +10,7 @@ class CustomLogFormatter(logging.Formatter):
         The log format string.
     """
 
-    format_ = """[%(asctime)s]\npath = %(pathname)s\nlevel = %(levelname)s\nlogger = %(name)s\nplace = %(filename)s; in '%(funcName)s'; line %(lineno)d\nmessage = %(message)s\n"""
+    format_ = """[%(asctime)s.%(msecs)03d]\npath = %(pathname)s\nlevel = %(levelname)s\nlogger = %(name)s\nplace = %(filename)s; in '%(funcName)s'; line %(lineno)d\nmessage = %(message)s\n"""
 
     def format(self, record: logging.LogRecord) -> str:
         """
@@ -96,7 +96,7 @@ class ConsoleLogFormatter(ColoredLogFormatter):
         The console log format string.
     """
 
-    format_ = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    format_ = "%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
 
 class FileLogFormatter(CustomLogFormatter):
@@ -108,4 +108,4 @@ class FileLogFormatter(CustomLogFormatter):
         The file log format string.
     """
 
-    format_ = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s; in '%(funcName)s':%(lineno)d)"
+    format_ = "%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s (%(filename)s; in '%(funcName)s':%(lineno)d)"
