@@ -42,7 +42,7 @@ APPLICATION_LOG_BACKUP_COUNT = 2  # 2 backup files
 
 # Server
 HOST = "0.0.0.0"
-PORT = 8000
+PORT = 8591
 
 # Redis
 REDIS_ENCODING = ENCODING
