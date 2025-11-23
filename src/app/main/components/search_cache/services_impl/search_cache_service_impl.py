@@ -14,8 +14,8 @@ class SearchCacheServiceImpl(SearchCacheServiceI):
     async def get_cached_playlist_by_source(self, source: str) -> Optional[Playlist]:
         return await self._search_cache_repository.get_cached_search_entity_by_source(source, Playlist)
 
-    async def cache_search_entity(self, entity: SearchEntity) -> None:
-        await self._search_cache_repository.cache_search_entity(entity)
+    async def cache_search_entity(self, entity: SearchEntity) -> None:  # TODO: Delete url params for yandex music tracks (?utm_source=desktop&utm_medium=copy_link)
+        await self._search_cache_repository.cache_search_entity(entity)  # TODO: Add TTL
 
     async def cache_search_entities(self, entities: Iterable[SearchEntity]) -> None:
         await self._search_cache_repository.cache_search_entities(entities)

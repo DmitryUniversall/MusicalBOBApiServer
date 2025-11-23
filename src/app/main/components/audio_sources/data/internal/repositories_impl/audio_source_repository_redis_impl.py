@@ -18,7 +18,7 @@ class AudioSourceRepositoryRedisImpl(AudioSourceRepositoryI):
     def __init__(self, redis_client: aioredis.client.Redis) -> None:
         self._redis_client = redis_client
 
-        self._cache = RedisCache(
+        self._cache = RedisCache(  # TODO: ADD TTL
             redis_client=self._redis_client,
             key=project_settings.AUDIO_SOURCE_CACHE_REDIS_KEY,
             max_size=project_settings.AUDIO_SOURCE_CACHE_MAX_SIZE
