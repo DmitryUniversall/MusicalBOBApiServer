@@ -14,7 +14,7 @@ class AudioSourceDataContainer(DeclarativeContainer):
     # Private
     _redis_client = providers.Resource(
         _redis_client_factory.provided.call().get_client.call(
-            db=project_settings.SEARCH_REDIS_DB
+            db=project_settings.REDIS_DB_ID
         )
     )
 
