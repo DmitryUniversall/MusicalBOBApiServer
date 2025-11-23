@@ -169,8 +169,8 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
             await self._ym_client.get_audio_sources_by_url(url=url)
         ))
 
-    async def _get_cached_audio_sources_by_track_uuid(self, track_uuid: str) -> tuple[AudioSource, ...]:  # Caching album is not fully safe, but I'll do it anyway
-        return await self._audio_source_service.get_cached_audio_sources_for_track(track_uuid)
+    async def _get_cached_audio_sources_by_track_url(self, track_source: str) -> tuple[AudioSource, ...]:  # Caching album is not fully safe, but I'll do it anyway
+        return await self._audio_source_service.get_cached_audio_sources_for_track(track_source)
 
     async def get_audio_sources_by_url(self, url: str) -> tuple[AudioSource, ...]:
         fetched_audio_sources = await self._fetch_audio_sources_by_url(url)
@@ -185,7 +185,7 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         ))
 
     async def get_audio_sources_for_track(self, track: Track) -> tuple[AudioSource, ...]:
-        if cached_audio_sources := await self._get_cached_audio_sources_by_track_uuid(track.uuid):
+        if cached_audio_sources := await self._get_cached_audio_sources_by_track_url(track.source):
             _logger.debug(f"Found cached audio sources for track: {track.source}")
             return cached_audio_sources
 
@@ -194,7 +194,7 @@ class YMSearchRepositoryImpl(YMSearchRepositoryI):
         else:
             sources = await self._fetch_audio_sources_by_url(url=track.source)  # Using _fetch_audio_sources_by_url to avoid another cache check
 
-        await self._audio_source_service.cache_audio_sources_for_track(track.uuid, sources)
+        await self._audio_source_service.cache_audio_sources_and_map_with_track(track.source, sources)
 
         return sources
 

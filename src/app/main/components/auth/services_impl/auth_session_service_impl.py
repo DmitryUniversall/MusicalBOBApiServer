@@ -14,14 +14,15 @@ class AuthSessionServiceImpl(AuthSessionServiceI):
     def generate_session_uuid(self) -> str:
         return self._auth_session_repository.generate_session_uuid()
 
-    async def get_session(self, user_id: int, session_uuid: UUIDString) -> AuthSessionInternal:
-        if (session := await self._auth_session_repository.get_session(user_id, session_uuid)) is None:
-            raise InvalidSessionHTTPException(status_code=HTTPStatus.UNAUTHORIZED)
-
+    async def _validate_session(self, session: AuthSessionInternal) -> None:
         if not session.is_active:
             raise InactiveSessionHTTPException(status_code=HTTPStatus.UNAUTHORIZED)
 
-        return session
+    async def get_session(self, user_id: int, session_uuid: UUIDString) -> AuthSessionInternal:
+        if (session := await self._auth_session_repository.get_session(user_id, session_uuid)) is not None:
+            return session
+
+        raise InvalidSessionHTTPException(status_code=HTTPStatus.UNAUTHORIZED)
 
     async def revoke_session(self, user_id: int, session_uuid: UUIDString) -> None:
         success = await self._auth_session_repository.revoke_session_by_id(user_id, session_uuid)
@@ -51,7 +52,12 @@ class AuthSessionServiceImpl(AuthSessionServiceI):
         return await self._auth_session_repository.revoke_other_sessions(user_id, keep_session_uuid)
 
     async def get_session_from_access_token(self, access_token: str) -> AuthSessionInternal:
-        return await self._auth_session_repository.get_session_from_access_token(access_token)
+        session = await self._auth_session_repository.get_session_from_access_token(access_token)
+        await self._validate_session(session)  # TODO: Make it better (1 gateway for getting sessions to perform validation in 1 place)
+        return session
 
     async def get_session_from_refresh_token(self, refresh_token: str) -> AuthSessionInternal:
-        return await self._auth_session_repository.get_session_from_refresh_token(refresh_token)
+        session = await self._auth_session_repository.get_session_from_refresh_token(refresh_token)
+
+        await self._validate_session(session)  # TODO: Make it better (1 gateway for getting sessions to perform validation in 1 place)
+        return session

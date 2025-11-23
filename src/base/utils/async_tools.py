@@ -203,4 +203,4 @@ class TempTask:
         return await self._task_handler.__aenter__()
 
     async def __aexit__(self, exc_type, exc, tb):
-        return await self._task_handler.__aexit__(exc_type, exc, tb)
+        return await self._task_handler.__aexit__(exc_type, exc, tb)  # type: ignore

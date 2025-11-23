@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from enum import Enum
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator, Optional, cast
 
 import aiohttp
 from dependency_injector.wiring import Provide
@@ -65,9 +65,11 @@ async def _buffered_audio_streamer(audio_source: AudioSource, request_headers: d
                 case _AudioReaderEvent.START:
                     _logger.debug(f"Start streaming audio source '{audio_source.uuid}'. Using source: {audio_source.source}")
                 case _AudioReaderEvent.DATA:
-                    yield event[1]
+                    data = cast(bytes, event[1])
+                    yield data
                 case _AudioReaderEvent.ERROR:
-                    _logger.warning(f"Failed to stream audio source '{audio_source.uuid}'. Got an error: {event[1]}")
+                    error = cast(Exception, event[1])
+                    _logger.warning(f"Failed to stream audio source '{audio_source.uuid}'. Got an error: {error}")
                     return
                 case _AudioReaderEvent.END:
                     _logger.debug(f"Finished streaming audio source '{audio_source.uuid}'")

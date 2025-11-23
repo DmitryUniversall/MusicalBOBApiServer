@@ -1,6 +1,6 @@
 from typing import Iterable, Optional
 
-from src.app.main.components.common_search import SearchEntity, Track, Playlist
+from src.app.main.components.common_search import Track, Playlist, SearchEntity
 from src.app.main.components.search_cache.domain import SearchCacheRepositoryI, SearchCacheServiceI
 
 
