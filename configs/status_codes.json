@@ -63,6 +63,10 @@
             "NOT_IMPLEMENTED": {
                 "application_status_code": 2009,
                 "message": "Not implemented yet"
+            },
+            "METHOD_NOT_SUPPORTED": {
+                "application_status_code": 2010,
+                "message": "Method not supported"
             }
         },
         "AUTH": {
@@ -117,6 +121,10 @@
             "AUTH_FAILED_UNKNOWN_ERROR": {
                 "application_status_code": 3013,
                 "message": "Unknown error occurred during auth process, request rejected"
+            },
+            "ACCESS_DENIED": {
+                "application_status_code": 3014,
+                "message": "Access denied"
             }
         },
         "SEARCH": {
