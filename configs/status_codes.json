@@ -67,6 +67,10 @@
             "METHOD_NOT_SUPPORTED": {
                 "application_status_code": 2010,
                 "message": "Method not supported"
+            },
+            "ALREADY_IN_USE": {
+                "application_status_code": 2011,
+                "message": "Resource is already in use"
             }
         },
         "AUTH": {
