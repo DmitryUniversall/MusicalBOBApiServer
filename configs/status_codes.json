@@ -71,6 +71,10 @@
             "ALREADY_IN_USE": {
                 "application_status_code": 2011,
                 "message": "Resource is already in use"
+            },
+            "EXPIRED": {
+                "application_status_code": 2012,
+                "message": "Resource expired"
             }
         },
         "AUTH": {
