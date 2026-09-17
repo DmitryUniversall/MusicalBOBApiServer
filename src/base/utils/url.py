@@ -1,9 +1,7 @@
-import re
-from typing import Container, Final
+from typing import Container
 from urllib.parse import unquote
 
-_SCHEME_REGEX: Final[re.Pattern] = re.compile(r"\A\s*[a-z][a-z0-9+.\-]*://", re.IGNORECASE)
-_INVISIBLE_REGEX: Final[re.Pattern] = re.compile(r"[​-‏‪-‮⁦-⁩﻿]")
+from .constants import INVISIBLE_CHARS_REGEX, URL_SCHEME_REGEX
 
 
 def has_url_scheme(text: str) -> bool:
@@ -17,7 +15,7 @@ def has_url_scheme(text: str) -> bool:
         `True` if a scheme is present.
     """
 
-    return _SCHEME_REGEX.match(text) is not None
+    return URL_SCHEME_REGEX.match(text) is not None
 
 
 def normalize_url(raw: str) -> str:
@@ -34,7 +32,7 @@ def normalize_url(raw: str) -> str:
         Url with a scheme, safe to pass to `urlsplit`.
     """
 
-    text = _INVISIBLE_REGEX.sub("", raw).strip().strip("<>\"'")
+    text = INVISIBLE_CHARS_REGEX.sub("", raw).strip().strip("<>\"'")
 
     return text if has_url_scheme(text) else f"https://{text}"
 

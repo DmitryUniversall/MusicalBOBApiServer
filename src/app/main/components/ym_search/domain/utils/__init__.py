@@ -1,5 +1,4 @@
 from .ym_urls import (
-    YM_PUBLIC_HOST,
     canonical_track_url,
     canonical_album_url,
     canonical_artist_url,

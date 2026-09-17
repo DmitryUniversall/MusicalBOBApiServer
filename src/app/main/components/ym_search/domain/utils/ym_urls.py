@@ -1,16 +1,9 @@
-import re
-from typing import Final, Optional
+from typing import Optional
 from urllib.parse import SplitResult, quote, urlsplit
 
+from src.base.utils.constants import HTTP_SCHEMES
 from src.base.utils.url import normalize_url
-
-YM_PUBLIC_HOST: Final[str] = "music.yandex.ru"
-
-# Yandex can rename TLD, so the host is matched by shape instead of by a hardcoded list.
-# We never request this host, we only read ids out of the path, so being permissive here is safe.
-_YM_HOST_REGEX: Final[re.Pattern] = re.compile(r"\A(?:www\.)?music\.yandex\.[a-z]{2,4}(?:\.[a-z]{2,3})?\Z")
-_YM_APP_SCHEMES: Final[frozenset[str]] = frozenset({"yandexmusic", "yandexmusic-open", "musicsdk"})
-_HTTP_SCHEMES: Final[frozenset[str]] = frozenset({"http", "https"})
+from ..constants import YM_APP_SCHEMES, YM_HOST_REGEX, YM_PUBLIC_HOST
 
 
 def canonical_track_url(track_id: str | int) -> str:
@@ -63,9 +56,9 @@ def split_ym_url(url: str) -> Optional[SplitResult]:
     parts = urlsplit(normalize_url(url))
     scheme = parts.scheme.lower()
 
-    if scheme in _YM_APP_SCHEMES:  # yandexmusic://album/123/track/456 -> netloc holds the first segment
+    if scheme in YM_APP_SCHEMES:  # yandexmusic://album/123/track/456 -> netloc holds the first segment
         return parts._replace(netloc="", path=f"/{parts.netloc}{parts.path}")
-    if scheme in _HTTP_SCHEMES and _YM_HOST_REGEX.match(parts.hostname or ""):
+    if scheme in HTTP_SCHEMES and YM_HOST_REGEX.match(parts.hostname or ""):
         return parts
 
     return None
