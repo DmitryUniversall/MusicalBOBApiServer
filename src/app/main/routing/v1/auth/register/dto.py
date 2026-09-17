@@ -1,8 +1,8 @@
 from pydantic import Field
 
-from app.core import BaseSchema
-from app.main.components.auth import AuthSessionPrivate
-from app.main.components.users import UserPrivate
+from src.app.core import BaseSchema
+from src.app.main.components.auth import AuthSessionPrivate
+from src.app.main.components.users import UserPrivate
 
 
 class RegisterRequestDTO(BaseSchema):
