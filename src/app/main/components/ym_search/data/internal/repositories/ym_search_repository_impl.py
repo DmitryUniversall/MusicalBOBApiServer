@@ -11,13 +11,15 @@ from src.app.main.components.ym_search.domain.entities import (
     YMAlbumLink,
     YMPlaylistLink,
     YMTrackLink,
-    YMUserPlaylistLink,
+    YMUserPlaylistLink
+)
+from src.app.main.components.ym_search.domain.parsers import parse_ym_link
+from src.app.main.components.ym_search.domain.utils import (
     canonical_artist_url,
     canonical_shared_playlist_url,
     canonical_track_url,
     canonical_user_playlist_url,
-    canonical_user_url,
-    parse_ym_link
+    canonical_user_url
 )
 from src.app.main.components.ym_search.domain.repositories import YMSearchRepositoryI
 from src.base.state import project_settings

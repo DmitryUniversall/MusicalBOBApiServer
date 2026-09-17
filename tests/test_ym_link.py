@@ -10,10 +10,10 @@ from src.app.main.components.ym_search.domain.entities import (
     YMSearchLink,
     YMSharedPlaylistLink,
     YMTrackLink,
-    YMUserPlaylistLink,
-    is_ym_url,
-    parse_ym_link
+    YMUserPlaylistLink
 )
+from src.app.main.components.ym_search.domain.parsers import parse_ym_link
+from src.app.main.components.ym_search.domain.utils import is_ym_url
 
 UUID = "1f2e3d4c-5b6a-7980-9a8b-7c6d5e4f3a2b"
 

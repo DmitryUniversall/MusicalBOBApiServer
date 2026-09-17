@@ -1,13 +1,11 @@
 import asyncio
-import re
 from abc import ABC
-from typing import Final, Iterable, Optional
+from typing import Iterable, Optional
 
 from src.app.main.components.common_search import MediaContent, AbstractPlatformSearchService
 from src.base.state import project_settings
 from src.base.utils.async_tools import gather_for_each
-
-_SCHEME_REGEX: Final[re.Pattern] = re.compile(r"\A\s*[a-z][a-z0-9+.\-]*://", re.IGNORECASE)
+from src.base.utils.url import has_url_scheme
 
 
 class BasePlatformSearchService(AbstractPlatformSearchService, ABC):
@@ -25,7 +23,7 @@ class BasePlatformSearchService(AbstractPlatformSearchService, ABC):
             `True` if the query must be resolved as a url.
         """
 
-        return _SCHEME_REGEX.match(query) is not None
+        return has_url_scheme(query)
 
     async def _search(self, query: str) -> MediaContent:
         if self._is_url_query(query):
