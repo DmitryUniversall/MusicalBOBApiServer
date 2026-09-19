@@ -1,4 +1,3 @@
-import re
 from itertools import chain
 from logging import getLogger
 from typing import Iterable, Optional
@@ -9,12 +8,11 @@ from yandex_music.exceptions import (
     UnauthorizedError as YMUnauthorizedError
 )
 
-from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException, BadUrlFormatHttpException
+from src.app.main.components.common_search.domain.exceptions import SearchFailedNotFoundHttpException
 from src.app.main.components.common_search.domain.exceptions.generics import ContentUnavailableHttpException
 from src.app.main.components.ym_search.data.internal.ym_client.abc import CustomAsyncYMClientI
 from src.base.state import project_settings
 from src.base.utils.async_tools import gather_all
-from src.base.utils.regex import UUID_REGEX
 
 _logger = getLogger(__name__)
 
@@ -31,58 +29,19 @@ class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
 
         return tuple(result.tracks.results)
 
-    async def get_album_with_tracks_by_url(self, url: str) -> tuple[yandex_music.Album, tuple[yandex_music.Track, ...]]:
-        if (match := re.search(r"album/(\d+)", url)) is None:
-            raise BadUrlFormatHttpException(message=f"Cannot fetch album from yandex music by url '{url}': invalid url")
-
-        album_id = int(match.group(1))
-
-        return await self.get_album_with_tracks(album_id)
-
-    async def get_track_by_url(self, url: str) -> yandex_music.Track:
-        if (match := re.search(r"album/(\d+)/track/(\d+)", url)) is not None:
-            album_id, track_id = int(match.group(1)), int(match.group(2))
-        elif (match := re.search(r"track/(\d+)", url)) is not None:
-            album_id, track_id = int(match.group(1)), int(match.group(1))
-        else:
-            raise BadUrlFormatHttpException(message=f"Cannot fetch track from yandex music by url '{url}': invalid url")
-
-        return await self.get_track(
-            album_id=album_id,
-            track_id=track_id
-        )
-
-    async def _get_playlist_with_tracks_by_uuid(self, uuid: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
-        raise NotImplementedError()
-
-    async def get_playlist_with_tracks_by_url(self, url: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
-        if (match := re.search(f"playlists/({UUID_REGEX})", url)) is not None:
-            return await self._get_playlist_with_tracks_by_uuid(match.group(1))
-        elif (match := re.search(r"users/(\S+?)/playlists/(\d+)", url)) is not None:
-            return await self.get_playlist(username=match.group(1), playlist_id=int(match.group(2)))
-
-        raise BadUrlFormatHttpException(message=f"Cannot fetch playlist from yandex music by url '{url}': invalid url")
-
-    async def get_audio_sources_by_url(self, url: str) -> tuple[str, ...]:
-        track = await self.get_track_by_url(url)
-        return await self.get_audio_sources_by_raw(raw=track)
-
-    async def get_lyrics_by_url(self, url: str) -> str:
-        track = await self.get_track_by_url(url)
-        return await self.get_lyrics_by_raw(raw=track)
-
     async def get_full_tracks(self, tracks: Iterable[yandex_music.TrackShort]) -> tuple[yandex_music.Track, ...]:
         return await gather_all((short_track.fetch_track_async() for short_track in tracks))
 
-    async def get_track(self, album_id: int, track_id: int) -> yandex_music.Track:
-        tracks = await self.tracks(f"{track_id}:{album_id}")
+    async def get_track(self, track_id: str, album_id: Optional[str] = None) -> yandex_music.Track:
+        # Album is a context hint only: passing a wrong one is worse than passing none
+        tracks = await self.tracks(f"{track_id}:{album_id}" if album_id is not None else track_id)
 
         if len(tracks) == 0:
-            raise SearchFailedNotFoundHttpException(message=f"Failed to fetch track from yandex music with {album_id=}; {track_id=}")
+            raise SearchFailedNotFoundHttpException(message=f"Failed to fetch track from yandex music with {track_id=}; {album_id=}")
 
         return tracks[0]
 
-    async def get_album_with_tracks(self, album_id: int) -> tuple[yandex_music.Album, tuple[yandex_music.Track, ...]]:
+    async def get_album_with_tracks(self, album_id: str) -> tuple[yandex_music.Album, tuple[yandex_music.Track, ...]]:
         album = await self.albums_with_tracks(album_id)
 
         if album.volumes is None:
@@ -90,18 +49,39 @@ class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
 
         return album, tuple(chain(*album.volumes))
 
+    async def _playlist_with_tracks(self, playlist: Optional[yandex_music.Playlist], not_found_message: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
+        if playlist is None:
+            raise SearchFailedNotFoundHttpException(message=not_found_message)
+
+        tracks = playlist.tracks if playlist.tracks is not None else await playlist.fetch_tracks_async()
+
+        return playlist, await self.get_full_tracks(tracks=tracks)
+
     async def get_playlist(
             self,
             username: str,
-            playlist_id: int
+            playlist_id: str
     ) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
+        message = f"Failed to fetch playlist from yandex music with {username=}; {playlist_id=}"
+
         try:
             playlist = await self.users_playlists(kind=playlist_id, user_id=username)
-            return playlist, await self.get_full_tracks(tracks=playlist.tracks)
         except YMNotFoundError as error:
-            raise SearchFailedNotFoundHttpException(  # Playlist is private or does not exist
-                message=f"Failed to fetch playlist from yandex music with {username=}; {playlist_id=}"
-            ) from error
+            raise SearchFailedNotFoundHttpException(message=message) from error  # Playlist is private or does not exist
+
+        return await self._playlist_with_tracks(playlist, message)
+
+    async def get_playlist_by_uuid(self, playlist_uuid: str) -> tuple[yandex_music.Playlist, tuple[yandex_music.Track, ...]]:
+        # Playlists shared by link are addressed by uuid (optionally prefixed with "lk."/"ps.")
+        # and are served by an endpoint that yandex-music 2.2.0 does not wrap
+        message = f"Failed to fetch playlist from yandex music with {playlist_uuid=}"
+
+        try:
+            result = await self._request.get(f"{self.base_url}/playlist/{playlist_uuid}")
+        except YMNotFoundError as error:
+            raise SearchFailedNotFoundHttpException(message=message) from error  # Playlist is private or does not exist
+
+        return await self._playlist_with_tracks(yandex_music.Playlist.de_json(result, self), message)
 
     async def get_audio_sources_by_raw(self, raw: yandex_music.Track) -> tuple[str, ...]:
         try:
@@ -117,4 +97,4 @@ class CustomAsyncYMClientImpl(CustomAsyncYMClientI):
         if lyrics := supplement.lyrics:
             return lyrics.full_lyrics
 
-        raise SearchFailedNotFoundHttpException(messsage="Failed to get lyrics for specified track")
+        raise SearchFailedNotFoundHttpException(message="Failed to get lyrics for specified track")
